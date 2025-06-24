@@ -37,13 +37,13 @@ export default function Matches() {
   }, [])
 
   return (
-    <div className="p-4 space-y-6 w-full max-w-sm mx-auto">
+    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-full mb-4">
-          <Heart className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-pink-500 to-red-500 rounded-full mb-6 shadow-lg">
+          <Heart className="w-10 h-10 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Matches</h1>
-        <p className="text-gray-600">Planes en los que coincidieron</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">Matches</h1>
+        <p className="text-gray-600 text-lg">Planes en los que coincidieron</p>
       </div>
 
       {matches.length === 0 ? (

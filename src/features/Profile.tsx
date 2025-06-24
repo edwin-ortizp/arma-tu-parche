@@ -35,26 +35,26 @@ export default function Profile() {
   const doSignOut = () => signOut(auth)
 
   return (
-    <div className="p-4 space-y-6 w-full max-w-sm mx-auto">
+    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
       <div className="text-center">
-        <div className="relative inline-block mb-4">
+        <div className="relative inline-block mb-6">
           {user.photoURL ? (
             <img
               src={user.photoURL}
               alt="avatar"
-              className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+              className="w-28 h-28 rounded-full border-4 border-white shadow-xl"
             />
           ) : (
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-              <User className="w-10 h-10 text-white" />
+            <div className="w-28 h-28 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center border-4 border-white shadow-xl">
+              <User className="w-12 h-12 text-white" />
             </div>
           )}
-          <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
-            <Crown className="w-4 h-4 text-white" />
+          <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
+            <Crown className="w-5 h-5 text-white" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">{user.displayName}</h1>
-        <p className="text-gray-600">{user.email}</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">{user.displayName}</h1>
+        <p className="text-gray-600 text-lg">{user.email}</p>
       </div>
 
       {/* PIN Card - moved to Friends screen */}

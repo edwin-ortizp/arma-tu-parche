@@ -124,37 +124,37 @@ export default function Friends() {
   }
 
   return (
-    <div className="p-4 space-y-6 w-full max-w-sm mx-auto">
+    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-4">
-          <Users className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-6 shadow-lg">
+          <Users className="w-10 h-10 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Mis Amigos</h1>
-        <p className="text-gray-600">Conecta con tus amigos para encontrar planes juntos</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">Mis Amigos</h1>
+        <p className="text-gray-600 text-lg">Conecta con tus amigos para encontrar planes juntos</p>
       </div>
 
       {/* Your PIN Card */}
-      <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-indigo-900">Tu PIN</CardTitle>
+      <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-indigo-900">Tu PIN</CardTitle>
         </CardHeader>
         <CardContent>
           {pin && (
-            <div className="flex items-center justify-between">
-              <div className="bg-white rounded-lg px-4 py-3 border border-indigo-200">
-                <p className="font-mono text-2xl font-bold text-indigo-900 tracking-wider">{pin}</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-xl px-6 py-4 border border-indigo-200 shadow-sm">
+                <p className="font-mono text-3xl font-bold text-indigo-900 tracking-wider">{pin}</p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={copyPin}
-                className="ml-3 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                className="ml-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-2"
               >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
               </Button>
             </div>
           )}
-          <p className="text-sm text-indigo-600 mt-2">
+          <p className="text-base text-indigo-600 leading-relaxed">
             Comparte este PIN con tus amigos para que puedan conectarse contigo
           </p>
         </CardContent>

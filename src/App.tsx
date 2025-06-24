@@ -76,15 +76,22 @@ function App() {
   if (!user) return <Login />
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-50">
-      <div className="flex-1 flex items-start justify-center w-full pt-4 pb-20">
-        {screen === 'home' && <Home />}
-        {screen === 'friends' && <Friends />}
-        {screen === 'matches' && <Matches />}
-        {screen === 'profile' && <Profile />}
-        {screen === 'config' && <Config />}
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-200" 
+         style={{
+           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.3' fill-rule='evenodd'%3E%3Cpath d='m0 40l40-40h-40v40zm40 0v-40h-40l40 40z'/%3E%3C/g%3E%3C/svg%3E")`,
+           backgroundSize: '40px 40px'
+         }}>
+      {/* Contenedor boxed para toda la aplicación */}
+      <div className="min-h-screen max-w-sm mx-auto bg-white shadow-xl relative flex flex-col">
+        <div className="flex-1 py-8 pb-24">
+          {screen === 'home' && <Home />}
+          {screen === 'friends' && <Friends />}
+          {screen === 'matches' && <Matches />}
+          {screen === 'profile' && <Profile />}
+          {screen === 'config' && <Config />}
+        </div>
+        <BottomNav current={screen} onChange={setScreen} isAdmin={userData?.role === 'admin'} />
       </div>
-      <BottomNav current={screen} onChange={setScreen} isAdmin={userData?.role === 'admin'} />
     </div>
   )
 }

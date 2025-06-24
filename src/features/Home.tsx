@@ -115,53 +115,53 @@ export default function Home() {
   }
 
   return (
-    <div className="p-4 space-y-6 w-full max-w-sm mx-auto">
+    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
       {/* Header */}
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full mb-4">
-          <Sparkles className="w-8 h-8 text-white" />
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full mb-6 shadow-lg">
+          <Sparkles className="w-10 h-10 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Encuentra tu Plan</h1>
-        <p className="text-gray-600">Descubre actividades perfectas para compartir</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">Encuentra tu Plan</h1>
+        <p className="text-gray-600 text-lg">Descubre actividades perfectas para compartir</p>
       </div>
 
       {connections.length === 0 ? (
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200">
-          <CardContent className="text-center py-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart className="w-8 h-8 text-white" />
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 shadow-sm">
+          <CardContent className="text-center py-10">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Heart className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">¡Conecta con Amigos!</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">¡Conecta con Amigos!</h3>
+            <p className="text-gray-600 mb-6 leading-relaxed">
               Aún no tienes conexiones. Agrega amigos con su PIN desde la sección de Amigos.
             </p>
-            <div className="inline-flex items-center text-sm text-indigo-600 bg-indigo-100 px-3 py-1 rounded-full">
+            <div className="inline-flex items-center text-sm text-indigo-600 bg-indigo-100 px-4 py-2 rounded-full">
               💡 Tip: Ve a la pestaña "Amigos" para conectarte
             </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Friend Selection */}
-          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-purple-900">Selecciona tu Compañero</CardTitle>
+          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl text-purple-900">Selecciona tu Compañero</CardTitle>
             </CardHeader>
             <CardContent>
               <Select value={selected} onValueChange={setSelected}>
-                <SelectTrigger className="w-full border-purple-200 focus:border-purple-400">
+                <SelectTrigger className="w-full border-purple-200 focus:border-purple-400 h-12">
                   <SelectValue placeholder="Elige un amigo para planificar juntos" />
                 </SelectTrigger>
                 <SelectContent>
                   {connections.map(c => (
                     <SelectItem key={c.uid} value={c.uid}>
-                      <div className="flex items-center">
-                        <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mr-2">
-                          <span className="text-white text-xs font-semibold">
+                      <div className="flex items-center py-1">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mr-3">
+                          <span className="text-white text-sm font-semibold">
                             {c.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        {c.name}
+                        <span className="text-base">{c.name}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -171,55 +171,55 @@ export default function Home() {
           </Card>
 
           {selected === '' ? (
-            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-              <CardContent className="text-center py-8">
-                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-xl">👆</span>
+            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-sm">
+              <CardContent className="text-center py-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white text-2xl">👆</span>
                 </div>
-                <p className="text-gray-700 font-medium">Elige una conexión para ver planes increíbles</p>
+                <p className="text-gray-700 font-medium text-lg">Elige una conexión para ver planes increíbles</p>
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Planes Disponibles</h2>
-                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                <h2 className="text-2xl font-bold text-gray-900">Planes Disponibles</h2>
+                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1">
                   {dates.length} planes
                 </Badge>
               </div>
               
               {dates.map(date => (
-                <Card key={date.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                  <div className={`h-2 bg-gradient-to-r ${date.bgGradient || 'from-blue-500 to-purple-500'}`} />
+                <Card key={date.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm">
+                  <div className={`h-3 bg-gradient-to-r ${date.bgGradient || 'from-blue-500 to-purple-500'}`} />
                   <CardContent className="p-0">
-                    <div className="p-4">
-                      <div className="flex items-start justify-between mb-3">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center">
-                          <div className="text-3xl mr-3">{date.image}</div>
+                          <div className="text-4xl mr-4">{date.image}</div>
                           <div>
-                            <h3 className="font-bold text-lg text-gray-900">{date.title}</h3>
-                            <p className="text-gray-600 text-sm mt-1">{date.description}</p>
+                            <h3 className="font-bold text-xl text-gray-900 mb-1">{date.title}</h3>
+                            <p className="text-gray-600 text-base leading-relaxed">{date.description}</p>
                           </div>
                         </div>
                         {date.goodForToday && (
-                          <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <Badge className="bg-green-100 text-green-700 border-green-200 px-3 py-1">
                             ¡Hoy!
                           </Badge>
                         )}
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-3 mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Clock className="w-4 h-4 mr-2 text-blue-500" />
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="flex items-center text-base text-gray-600">
+                          <Clock className="w-5 h-5 mr-3 text-blue-500" />
                           <span>{date.duration}</span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <DollarSign className="w-4 h-4 mr-2 text-green-500" />
+                        <div className="flex items-center text-base text-gray-600">
+                          <DollarSign className="w-5 h-5 mr-3 text-green-500" />
                           <span>{date.cost}</span>
                         </div>
                         {date.city && (
-                          <div className="flex items-center text-sm text-gray-600 col-span-2">
-                            <MapPin className="w-4 h-4 mr-2 text-red-500" />
+                          <div className="flex items-center text-base text-gray-600 col-span-2">
+                            <MapPin className="w-5 h-5 mr-3 text-red-500" />
                             <span>{date.city}</span>
                           </div>
                         )}
@@ -228,15 +228,15 @@ export default function Home() {
                       <div className="flex items-center justify-between">
                         <Badge 
                           variant="outline" 
-                          className="text-purple-700 border-purple-200 bg-purple-50"
+                          className="text-purple-700 border-purple-200 bg-purple-50 px-3 py-1 text-sm"
                         >
                           {date.category}
                         </Badge>
                         <Button 
                           onClick={() => likeDate(date.id)} 
-                          className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg"
+                          className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg px-6 py-3 text-base"
                         >
-                          <Heart className="w-4 h-4 mr-2" />
+                          <Heart className="w-5 h-5 mr-2" />
                           Me gusta
                         </Button>
                       </div>
