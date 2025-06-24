@@ -11,6 +11,7 @@ interface Match {
 
 export default function Matches() {
   const [matches, setMatches] = useState<Match[]>([])
+  const [connCount, setConnCount] = useState(0)
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -18,6 +19,7 @@ export default function Matches() {
       if (!uid) return
       const userSnap = await getDoc(doc(db, 'users', uid))
       const connections: string[] = userSnap.data()?.connections || []
+      setConnCount(connections.length)
       const q = query(collection(db, 'matches'), where('users', 'array-contains', uid))
       const snap = await getDocs(q)
       const list = snap.docs
@@ -38,7 +40,13 @@ export default function Matches() {
           <div>Coincidieron en el plan {m.dateId}</div>
         </div>
       ))}
-      {matches.length === 0 && <p>No hay matches aún.</p>}
+      {matches.length === 0 && (
+        <p className="text-center">
+          {connCount === 0
+            ? 'Agrega conexiones con su PIN para ver coincidencias.'
+            : 'No hay matches aún.'}
+        </p>
+      )}
     </div>
   )
 }

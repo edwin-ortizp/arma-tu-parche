@@ -80,29 +80,41 @@ export default function Home() {
 
   return (
     <div className="p-4 space-y-4 w-full max-w-md">
-      <select
-        value={selected}
-        onChange={e => setSelected(e.target.value)}
-        className="border rounded p-2 w-full mb-2"
-      >
-        <option value="">Selecciona un amigo</option>
-        {connections.map(c => (
-          <option key={c.uid} value={c.uid}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-      {selected === '' && <p className="text-center">Elige una conexión para ver planes.</p>}
-      {selected !== '' &&
-        dates.map(date => (
-          <div key={date.id} className="p-4 bg-white rounded shadow">
-            <div className="text-2xl mb-1">{date.image}</div>
-            <h2 className="font-bold">{date.title}</h2>
-            <p className="text-sm mb-2">{date.description}</p>
-            {date.city && <p className="text-xs text-gray-500">{date.city}</p>}
-            <Button onClick={() => likeDate(date.id)} className="mt-2">Me gusta</Button>
-          </div>
-        ))}
+      {connections.length === 0 ? (
+        <p className="text-center">
+          Aún no tienes conexiones. Agrega amigos con su PIN desde tu perfil.
+        </p>
+      ) : (
+        <>
+          <select
+            value={selected}
+            onChange={e => setSelected(e.target.value)}
+            className="border rounded p-2 w-full mb-2"
+          >
+            <option value="">Selecciona un amigo</option>
+            {connections.map(c => (
+              <option key={c.uid} value={c.uid}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          {selected === '' && (
+            <p className="text-center">Elige una conexión para ver planes.</p>
+          )}
+          {selected !== '' &&
+            dates.map(date => (
+              <div key={date.id} className="p-4 bg-white rounded shadow">
+                <div className="text-2xl mb-1">{date.image}</div>
+                <h2 className="font-bold">{date.title}</h2>
+                <p className="text-sm mb-2">{date.description}</p>
+                {date.city && <p className="text-xs text-gray-500">{date.city}</p>}
+                <Button onClick={() => likeDate(date.id)} className="mt-2">
+                  Me gusta
+                </Button>
+              </div>
+            ))}
+        </>
+      )}
     </div>
   )
 }

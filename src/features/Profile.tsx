@@ -66,10 +66,19 @@ export default function Profile() {
   return (
     <div className="p-4 space-y-2 w-full max-w-md text-center">
       {user.photoURL && (
-        <img src={user.photoURL} alt="avatar" className="w-20 h-20 rounded-full mx-auto" />
+        <img
+          src={user.photoURL}
+          alt="avatar"
+          className="w-20 h-20 rounded-full mx-auto"
+        />
       )}
       <h2 className="text-lg font-bold">{user.displayName}</h2>
-      <p className="text-sm">PIN: {pin}</p>
+      {pin && (
+        <div className="mx-auto w-max bg-gray-100 rounded p-2">
+          <p className="text-xs text-gray-500">Tu PIN</p>
+          <p className="font-mono text-xl tracking-widest">{pin}</p>
+        </div>
+      )}
       <div className="space-y-2">
         <input
           value={pinInput}
