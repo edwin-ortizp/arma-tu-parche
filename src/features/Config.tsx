@@ -54,7 +54,7 @@ export default function Config() {
   if (!allowed) return <p className="p-4 text-center">Acceso restringido</p>
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-3 p-4 max-w-sm mx-auto">
       <h2 className="text-lg font-bold text-center">Nuevo Plan</h2>
       <Input name="title" placeholder="Título" value={form.title} onChange={handleChange} />
       <Textarea name="description" placeholder="Descripción" value={form.description} onChange={handleChange} />

@@ -1,4 +1,4 @@
-import { Home, Heart, User, Settings } from 'lucide-react'
+import { Home, Heart, User, Settings, Users } from 'lucide-react'
 
 interface Props {
   current: string
@@ -9,6 +9,7 @@ interface Props {
 export default function BottomNav({ current, onChange, isAdmin }: Props) {
   const items = [
     { key: 'home', label: 'Inicio', icon: Home },
+    { key: 'friends', label: 'Amigos', icon: Users },
     { key: 'matches', label: 'Matches', icon: Heart },
     { key: 'profile', label: 'Perfil', icon: User },
   ]
