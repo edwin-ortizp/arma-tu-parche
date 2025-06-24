@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { addDoc, collection } from 'firebase/firestore'
-import { signInAnonymously } from 'firebase/auth'
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore'
 import { db, auth } from '@/firebase'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -21,11 +20,16 @@ const initialState = {
 
 export default function Config() {
   const [form, setForm] = useState(initialState)
+  const [allowed, setAllowed] = useState(false)
 
   useEffect(() => {
-    if (!auth.currentUser) {
-      signInAnonymously(auth).catch(console.error)
+    const check = async () => {
+      const uid = auth.currentUser?.uid
+      if (!uid) return
+      const snap = await getDoc(doc(db, 'users', uid))
+      setAllowed(snap.data()?.role === 'admin')
     }
+    check()
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -46,6 +50,8 @@ export default function Config() {
       console.error(err)
     }
   }
+
+  if (!allowed) return <p className="p-4 text-center">Acceso restringido</p>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 p-4 max-w-md mx-auto">

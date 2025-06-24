@@ -3,15 +3,18 @@ import { Home, Heart, User, Settings } from 'lucide-react'
 interface Props {
   current: string
   onChange: (screen: string) => void
+  isAdmin?: boolean
 }
 
-export default function BottomNav({ current, onChange }: Props) {
+export default function BottomNav({ current, onChange, isAdmin }: Props) {
   const items = [
     { key: 'home', label: 'Inicio', icon: Home },
     { key: 'matches', label: 'Matches', icon: Heart },
     { key: 'profile', label: 'Perfil', icon: User },
-    { key: 'config', label: 'Config', icon: Settings },
   ]
+  if (isAdmin) {
+    items.push({ key: 'config', label: 'Config', icon: Settings })
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-border flex justify-around py-2 z-50">

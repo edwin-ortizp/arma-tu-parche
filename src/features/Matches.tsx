@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 
 interface Match {
@@ -16,9 +16,17 @@ export default function Matches() {
     const fetchMatches = async () => {
       const uid = auth.currentUser?.uid
       if (!uid) return
+      const userSnap = await getDoc(doc(db, 'users', uid))
+      const connections: string[] = userSnap.data()?.connections || []
       const q = query(collection(db, 'matches'), where('users', 'array-contains', uid))
       const snap = await getDocs(q)
-      setMatches(snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<Match, 'id'>) })))
+      const list = snap.docs
+        .map(d => ({ id: d.id, ...(d.data() as Omit<Match, 'id'>) }))
+        .filter(m => {
+          const other = m.users.find(u => u !== uid)
+          return other && connections.includes(other)
+        })
+      setMatches(list)
     }
     fetchMatches()
   }, [])

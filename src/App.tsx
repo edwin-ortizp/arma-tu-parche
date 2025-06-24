@@ -8,18 +8,33 @@ import BottomNav from './components/BottomNav'
 import Login from './features/Login'
 import { auth, db } from './firebase'
 import { onAuthStateChanged } from 'firebase/auth'
-import { doc, setDoc, getDoc, query, collection, where, getDocs } from 'firebase/firestore'
+import {
+  doc,
+  setDoc,
+  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from 'firebase/firestore'
+
+interface UserData {
+  role: string
+  connections: string[]
+  pin: string
+}
 
 function App() {
   const [screen, setScreen] = useState('home')
   const [user, setUser] = useState(auth.currentUser)
+  const [userData, setUserData] = useState<UserData | undefined>()
 
   useEffect(() => {
     return onAuthStateChanged(auth, async u => {
       setUser(u)
       if (u) {
         const ref = doc(db, 'users', u.uid)
-        const snap = await getDoc(ref)
+        let snap = await getDoc(ref)
         if (!snap.exists()) {
           let pin = ''
           for (let i = 0; i < 5; i++) {
@@ -34,8 +49,14 @@ function App() {
             email: u.email,
             photoURL: u.photoURL,
             pin,
+            role: 'user',
+            connections: [],
           })
+          snap = await getDoc(ref)
         }
+        setUserData(snap.data() as UserData)
+      } else {
+        setUserData(undefined)
       }
     })
   }, [])
@@ -50,7 +71,7 @@ function App() {
         {screen === 'profile' && <Profile />}
         {screen === 'config' && <Config />}
       </div>
-      <BottomNav current={screen} onChange={setScreen} />
+      <BottomNav current={screen} onChange={setScreen} isAdmin={userData?.role === 'admin'} />
     </div>
   )
 }
