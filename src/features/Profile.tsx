@@ -3,15 +3,18 @@ import { auth, db } from '@/firebase'
 import {
   doc,
   getDoc,
+  updateDoc,
 } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LogOut, User, Crown } from 'lucide-react'
+import Login from './Login'
 
 export default function Profile() {
   const user = auth.currentUser
   const [connections, setConnections] = useState<{ uid: string; name: string }[]>([])
+  const [interests, setInterests] = useState<string[]>([])
 
   useEffect(() => {
     const load = async () => {
@@ -26,13 +29,25 @@ export default function Profile() {
         })
       )
       setConnections(users)
+      setInterests(data?.interests || [])
     }
     load()
   }, [user])
 
-  if (!user) return null
+  if (!user) return <Login />
 
   const doSignOut = () => signOut(auth)
+
+  const categories = ['eventos', 'museos', 'actividades al aire libre']
+
+  const toggleInterest = async (cat: string) => {
+    if (!user) return
+    const newInterests = interests.includes(cat)
+      ? interests.filter(i => i !== cat)
+      : [...interests, cat]
+    setInterests(newInterests)
+    await updateDoc(doc(db, 'users', user.uid), { interests: newInterests })
+  }
 
   return (
     <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
@@ -88,6 +103,27 @@ export default function Profile() {
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Intereses</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                type="button"
+                variant={interests.includes(cat) ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleInterest(cat)}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="bg-gradient-to-br from-red-50 to-pink-50 border-red-200">
         <CardContent className="py-6">

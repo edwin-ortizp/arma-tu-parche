@@ -15,12 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Users, UserPlus, Copy, Check } from 'lucide-react'
+import Login from './Login'
 
 export default function Friends() {
   const user = auth.currentUser
   const [pin, setPin] = useState<string>()
   const [pinInput, setPinInput] = useState('')
-  const [connections, setConnections] = useState<{ uid: string; name: string }[]>([])
+  const [connections, setConnections] = useState<{ uid: string; name: string; relation?: string }[]>([])
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -35,6 +36,7 @@ export default function Friends() {
         const data = snap.data()
         setPin(data?.pin)
         const ids: string[] = data?.connections || []
+        const rels: Record<string, string> = data?.relationships || {}
         
         if (ids.length === 0) {
           setConnections([])
@@ -45,7 +47,11 @@ export default function Friends() {
           ids.map(async id => {
             try {
               const u = await getDoc(doc(db, 'users', id))
-              return { uid: id, name: u.data()?.displayName || 'Anon' }
+              return {
+                uid: id,
+                name: u.data()?.displayName || 'Anon',
+                relation: rels[id],
+              }
             } catch (err) {
               console.error('Error al cargar conexión:', id, err)
               return { uid: id, name: 'Error' }
@@ -53,14 +59,14 @@ export default function Friends() {
           })
         )
         setConnections(users)
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error al cargar datos en Friends:', err)
       }
     }
     load()
   }, [user])
 
-  if (!user) return null
+  if (!user) return <Login />
 
   const addConnection = async () => {
     if (!pinInput.trim()) return
@@ -90,25 +96,30 @@ export default function Friends() {
         return
       }
       
+      const relation = prompt('Tipo de vínculo (amigo, pareja, familia, trabajo, etc.)', 'amigo') || 'amigo'
+
       // Update current user's connections
       await updateDoc(doc(db, 'users', user.uid), {
         connections: arrayUnion(other.id),
+        [`relationships.${other.id}`]: relation,
       })
-      
+
       // Update other user's connections
       await updateDoc(doc(db, 'users', other.id), {
         connections: arrayUnion(user.uid),
+        [`relationships.${user.uid}`]: relation,
       })
-      
-      setConnections(prev => [...prev, { uid: other.id, name: other.data().displayName }])
+
+      setConnections(prev => [...prev, { uid: other.id, name: other.data().displayName, relation }])
       setPinInput('')
       alert('¡Conexión añadida exitosamente!')
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error al agregar conexión:', err)
-      if (err.code === 'permission-denied') {
+      const e = err as { code?: string; message?: string }
+      if (e.code === 'permission-denied') {
         alert('Error de permisos. Verifica que tienes acceso a la base de datos.')
       } else {
-        alert('Error al agregar conexión: ' + (err.message || 'Error desconocido'))
+        alert('Error al agregar conexión: ' + (e.message || 'Error desconocido'))
       }
     } finally {
       setLoading(false)
@@ -217,7 +228,7 @@ export default function Friends() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{c.name}</p>
-                    <p className="text-sm text-gray-500">Conectado</p>
+                    <p className="text-sm text-gray-500">{c.relation || 'Conectado'}</p>
                   </div>
                 </div>
               ))}

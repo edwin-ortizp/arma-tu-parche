@@ -6,7 +6,6 @@ import Matches from './features/Matches'
 import Profile from './features/Profile'
 import Config from './features/Config'
 import BottomNav from './components/BottomNav'
-import Login from './features/Login'
 import { auth, db } from './firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import {
@@ -27,12 +26,10 @@ interface UserData {
 
 function App() {
   const [screen, setScreen] = useState('home')
-  const [user, setUser] = useState(auth.currentUser)
   const [userData, setUserData] = useState<UserData | undefined>()
 
   useEffect(() => {
     return onAuthStateChanged(auth, async u => {
-      setUser(u)
       if (u) {
         try {
           const ref = doc(db, 'users', u.uid)
@@ -63,9 +60,9 @@ function App() {
           }
           
           setUserData(snap.data() as UserData)
-        } catch (error: any) {
+        } catch (error) {
           console.error('Error en la gestión del usuario:', error)
-          alert('Error al crear/cargar usuario: ' + error.message)
+          alert('Error al crear/cargar usuario: ' + (error as Error).message)
         }
       } else {
         setUserData(undefined)
@@ -73,7 +70,7 @@ function App() {
     })
   }, [])
 
-  if (!user) return <Login />
+
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-200" 
