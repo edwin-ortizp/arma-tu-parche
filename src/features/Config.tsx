@@ -5,6 +5,18 @@ import { db, auth } from '@/firebase'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
+import {
+  categories as planCategories,
+  relationTypes,
+  experienceTypes,
+} from '@/constants'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Upload, Trash2, Edit, Settings, Save, X } from 'lucide-react'
@@ -319,28 +331,51 @@ export default function Config() {
             className="min-h-24" 
             required 
           />
-          <Input
-            name="category"
-            placeholder="Categoría"
+          <Select
             value={form.category}
-            onChange={handleChange}
-            className="h-12"
-            required
-          />
-          <Input
-            name="relationType"
-            placeholder="Tipo de relación (solo, pareja, amigos, familia)"
+            onValueChange={value => setForm(prev => ({ ...prev, category: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Categoría" />
+            </SelectTrigger>
+            <SelectContent>
+              {planCategories.map(cat => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={form.relationType}
-            onChange={handleChange}
-            className="h-12"
-          />
-          <Input
-            name="experienceType"
-            placeholder="Tipo de experiencia (romántico, cultural, etc.)"
+            onValueChange={value => setForm(prev => ({ ...prev, relationType: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Tipo de relación" />
+            </SelectTrigger>
+            <SelectContent>
+              {relationTypes.map(rt => (
+                <SelectItem key={rt} value={rt}>
+                  {rt}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={form.experienceType}
-            onChange={handleChange}
-            className="h-12"
-          />
+            onValueChange={value => setForm(prev => ({ ...prev, experienceType: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Tipo de experiencia" />
+            </SelectTrigger>
+            <SelectContent>
+              {experienceTypes.map(et => (
+                <SelectItem key={et} value={et}>
+                  {et}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Input 
             name="duration" 
             placeholder="Duración (ej: 2 horas)" 

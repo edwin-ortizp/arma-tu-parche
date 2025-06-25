@@ -79,7 +79,7 @@ function App() {
            backgroundSize: '40px 40px'
          }}>
       {/* Contenedor boxed para toda la aplicación */}
-      <div className="min-h-screen max-w-sm mx-auto bg-white shadow-xl relative flex flex-col">
+      <div className="min-h-screen w-full max-w-sm md:max-w-2xl md:w-1/2 mx-auto bg-white shadow-xl relative flex flex-col">
         <div className="flex-1 py-8 pb-24">
           {screen === 'home' && <Home />}
           {screen === 'friends' && <Friends />}

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LogOut, User, Crown } from 'lucide-react'
 import Login from './Login'
+import { categories as planCategories } from '@/constants'
 
 export default function Profile() {
   const user = auth.currentUser
@@ -38,7 +39,7 @@ export default function Profile() {
 
   const doSignOut = () => signOut(auth)
 
-  const categories = ['eventos', 'museos', 'actividades al aire libre']
+  const categories = planCategories
 
   const toggleInterest = async (cat: string) => {
     if (!user) return

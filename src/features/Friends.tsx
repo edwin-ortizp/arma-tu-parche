@@ -13,15 +13,24 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Users, UserPlus, Copy, Check } from 'lucide-react'
 import Login from './Login'
+import { relationTypes } from '@/constants'
 
 export default function Friends() {
   const user = auth.currentUser
   const [pin, setPin] = useState<string>()
   const [pinInput, setPinInput] = useState('')
   const [connections, setConnections] = useState<{ uid: string; name: string; relation?: string }[]>([])
+  const [relationChoice, setRelationChoice] = useState(relationTypes[0])
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -96,7 +105,7 @@ export default function Friends() {
         return
       }
       
-      const relation = prompt('Tipo de vínculo (amigo, pareja, familia, trabajo, etc.)', 'amigo') || 'amigo'
+      const relation = relationTypes.includes(relationChoice) ? relationChoice : relationTypes[0]
 
       // Update current user's connections
       await updateDoc(doc(db, 'users', user.uid), {
@@ -112,6 +121,7 @@ export default function Friends() {
 
       setConnections(prev => [...prev, { uid: other.id, name: other.data().displayName, relation }])
       setPinInput('')
+      setRelationChoice(relationTypes[0])
       alert('¡Conexión añadida exitosamente!')
     } catch (err) {
       console.error('Error al agregar conexión:', err)
@@ -187,6 +197,18 @@ export default function Friends() {
               placeholder="Ingresa el PIN de tu amigo"
               className="border-green-200 focus:border-green-400"
             />
+            <Select value={relationChoice} onValueChange={setRelationChoice}>
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Tipo de vínculo" />
+              </SelectTrigger>
+              <SelectContent>
+                {relationTypes.map(rt => (
+                  <SelectItem key={rt} value={rt}>
+                    {rt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               onClick={addConnection}
               disabled={loading || !pinInput.trim()}
