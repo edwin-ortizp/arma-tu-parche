@@ -5,9 +5,22 @@ import { db, auth } from '@/firebase'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
+import {
+  categories as planCategories,
+  relationTypes,
+  experienceTypes,
+} from '@/constants'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Upload, Trash2, Edit, Settings, Save, X } from 'lucide-react'
+import Login from './Login'
 
 interface DatePlan {
   id: string
@@ -21,6 +34,9 @@ interface DatePlan {
   bgGradient: string
   goodForToday: boolean
   city?: string
+  relationType?: string
+  experienceType?: string
+  expiresAt?: string
 }
 
 const initialState = {
@@ -34,9 +50,13 @@ const initialState = {
   active: true,
   bgGradient: '',
   goodForToday: false,
+  relationType: '',
+  experienceType: '',
+  expiresAt: '',
 }
 
 export default function Config() {
+  const user = auth.currentUser
   const [form, setForm] = useState(initialState)
   const [allowed, setAllowed] = useState(false)
   const [view, setView] = useState<'list' | 'create' | 'import'>('list')
@@ -58,6 +78,8 @@ export default function Config() {
     }
     check()
   }, [])
+
+  if (!user) return <Login />
 
   const loadPlans = async () => {
     try {
@@ -103,12 +125,15 @@ export default function Config() {
       description: plan.description,
       city: plan.city || '',
       category: plan.category,
+      relationType: plan.relationType || '',
+      experienceType: plan.experienceType || '',
       duration: plan.duration,
       cost: plan.cost,
       image: plan.image,
       active: plan.active,
       bgGradient: plan.bgGradient,
       goodForToday: plan.goodForToday,
+      expiresAt: plan.expiresAt || '',
     })
     setEditingId(plan.id)
     setView('create')
@@ -254,10 +279,13 @@ export default function Config() {
                   
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">{plan.category}</Badge>
+                    {plan.relationType && <Badge variant="outline">{plan.relationType}</Badge>}
+                    {plan.experienceType && <Badge variant="outline">{plan.experienceType}</Badge>}
                     <Badge variant="outline">{plan.duration}</Badge>
                     <Badge variant="outline">{plan.cost}</Badge>
                     {plan.active && <Badge className="bg-green-100 text-green-700">Activo</Badge>}
                     {plan.goodForToday && <Badge className="bg-blue-100 text-blue-700">Hoy</Badge>}
+                    {plan.expiresAt && <Badge variant="outline">Hasta {plan.expiresAt}</Badge>}
                   </div>
                 </CardContent>
               </Card>
@@ -303,14 +331,51 @@ export default function Config() {
             className="min-h-24" 
             required 
           />
-          <Input 
-            name="category" 
-            placeholder="Categoría" 
-            value={form.category} 
-            onChange={handleChange} 
-            className="h-12" 
-            required 
-          />
+          <Select
+            value={form.category}
+            onValueChange={value => setForm(prev => ({ ...prev, category: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Categoría" />
+            </SelectTrigger>
+            <SelectContent>
+              {planCategories.map(cat => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={form.relationType}
+            onValueChange={value => setForm(prev => ({ ...prev, relationType: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Tipo de relación" />
+            </SelectTrigger>
+            <SelectContent>
+              {relationTypes.map(rt => (
+                <SelectItem key={rt} value={rt}>
+                  {rt}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={form.experienceType}
+            onValueChange={value => setForm(prev => ({ ...prev, experienceType: value }))}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Tipo de experiencia" />
+            </SelectTrigger>
+            <SelectContent>
+              {experienceTypes.map(et => (
+                <SelectItem key={et} value={et}>
+                  {et}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Input 
             name="duration" 
             placeholder="Duración (ej: 2 horas)" 
@@ -342,12 +407,19 @@ export default function Config() {
             onChange={handleChange} 
             className="h-12" 
           />
-          <Input 
-            name="bgGradient" 
-            placeholder="Gradiente CSS (ej: from-blue-500 to-purple-500)" 
-            value={form.bgGradient} 
-            onChange={handleChange} 
-            className="h-12" 
+          <Input
+            name="bgGradient"
+            placeholder="Gradiente CSS (ej: from-blue-500 to-purple-500)"
+            value={form.bgGradient}
+            onChange={handleChange}
+            className="h-12"
+          />
+          <Input
+            name="expiresAt"
+            placeholder="Fecha límite (YYYY-MM-DD opcional)"
+            value={form.expiresAt}
+            onChange={handleChange}
+            className="h-12"
           />
           
           <div className="space-y-3">
@@ -404,7 +476,10 @@ export default function Config() {
     "active": true,
     "bgGradient": "from-blue-500 to-purple-500",
     "goodForToday": false,
-    "city": "Madrid"
+    "city": "Madrid",
+    "relationType": "pareja",
+    "experienceType": "cultural",
+    "expiresAt": "2025-06-01"
   }
 ]`}
               </pre>

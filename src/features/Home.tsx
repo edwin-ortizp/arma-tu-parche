@@ -25,20 +25,31 @@ interface DatePlan {
   bgGradient: string
   goodForToday: boolean
   city?: string
+  relationType?: string
+  experienceType?: string
+  expiresAt?: string
 }
 
 export default function Home() {
   const [dates, setDates] = useState<DatePlan[]>([])
   const [connections, setConnections] = useState<{ uid: string; name: string }[]>([])
   const [selected, setSelected] = useState<string>('')
+  const isLogged = !!auth.currentUser
 
   useEffect(() => {
     const load = async () => {
       try {
         // Cargar planes disponibles
         const snap = await getDocs(collection(db, 'dates'))
+        const now = Date.now()
         const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<DatePlan, 'id'>) }))
-        setDates(items.filter(d => d.active))
+        setDates(
+          items.filter(
+            d =>
+              d.active &&
+              (!d.expiresAt || new Date(d.expiresAt).getTime() > now)
+          )
+        )
 
         // Cargar conexiones del usuario actual
         const uid = auth.currentUser?.uid
@@ -70,9 +81,10 @@ export default function Home() {
           })
         )
         setConnections(users)
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error al cargar datos:', err)
-        if (err.code === 'permission-denied') {
+        const e = err as { code?: string }
+        if (e.code === 'permission-denied') {
           alert('Error de permisos al cargar datos. Verifica tu configuración de Firestore.')
         }
       }
@@ -80,9 +92,17 @@ export default function Home() {
     load()
   }, [])
 
+  const filteredDates = dates.filter(d =>
+    !isLogged ? d.relationType === 'solo' : true
+  )
+
   const likeDate = async (dateId: string) => {
     const user = auth.currentUser
-    if (!user || !selected) return
+    if (!user) {
+      alert('Inicia sesión para guardar planes')
+      return
+    }
+    if (!selected) return
     try {
       await setDoc(doc(db, 'likes', `${user.uid}_${dateId}`), {
         userId: user.uid,
@@ -97,19 +117,25 @@ export default function Home() {
         const matchRef = doc(db, 'matches', `${[user.uid, selected].sort().join('_')}_${dateId}`)
         const mSnap = await getDoc(matchRef)
         if (!mSnap.exists()) {
+          const plannedFor =
+            prompt(
+              '¿Cuándo te gustaría realizar este plan? (Ej: 2025-07-02 o "próximo fin de semana")'
+            ) || ''
           await setDoc(matchRef, {
             users: [user.uid, selected],
             dateId,
             createdAt: Date.now(),
+            plannedFor,
           })
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error al dar like:', err)
-      if (err.code === 'permission-denied') {
+      const e = err as { code?: string; message?: string }
+      if (e.code === 'permission-denied') {
         alert('Error de permisos. Verifica tu configuración de Firestore.')
       } else {
-        alert('Error al procesar el like: ' + (err.message || 'Error desconocido'))
+        alert('Error al procesar el like: ' + (e.message || 'Error desconocido'))
       }
     }
   }
@@ -125,7 +151,7 @@ export default function Home() {
         <p className="text-gray-600 text-lg">Descubre actividades perfectas para compartir</p>
       </div>
 
-      {connections.length === 0 ? (
+      {isLogged && connections.length === 0 ? (
         <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 shadow-sm">
           <CardContent className="text-center py-10">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
@@ -142,35 +168,36 @@ export default function Home() {
         </Card>
       ) : (
         <div className="space-y-8">
-          {/* Friend Selection */}
-          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl text-purple-900">Selecciona tu Compañero</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Select value={selected} onValueChange={setSelected}>
-                <SelectTrigger className="w-full border-purple-200 focus:border-purple-400 h-12">
-                  <SelectValue placeholder="Elige un amigo para planificar juntos" />
-                </SelectTrigger>
-                <SelectContent>
-                  {connections.map(c => (
-                    <SelectItem key={c.uid} value={c.uid}>
-                      <div className="flex items-center py-1">
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-white text-sm font-semibold">
-                            {c.name.charAt(0).toUpperCase()}
-                          </span>
+          {isLogged && connections.length > 0 && (
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 shadow-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-purple-900">Selecciona tu Compañero</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select value={selected} onValueChange={setSelected}>
+                  <SelectTrigger className="w-full border-purple-200 focus:border-purple-400 h-12">
+                    <SelectValue placeholder="Elige un amigo para planificar juntos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {connections.map(c => (
+                      <SelectItem key={c.uid} value={c.uid}>
+                        <div className="flex items-center py-1">
+                          <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mr-3">
+                            <span className="text-white text-sm font-semibold">
+                              {c.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <span className="text-base">{c.name}</span>
                         </div>
-                        <span className="text-base">{c.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+          )}
 
-          {selected === '' ? (
+          {isLogged && connections.length > 0 && selected === '' ? (
             <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-sm">
               <CardContent className="text-center py-10">
                 <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -184,11 +211,11 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900">Planes Disponibles</h2>
                 <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1">
-                  {dates.length} planes
+                  {filteredDates.length} planes
                 </Badge>
               </div>
-              
-              {dates.map(date => (
+
+              {filteredDates.map(date => (
                 <Card key={date.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 shadow-sm">
                   <div className={`h-3 bg-gradient-to-r ${date.bgGradient || 'from-blue-500 to-purple-500'}`} />
                   <CardContent className="p-0">

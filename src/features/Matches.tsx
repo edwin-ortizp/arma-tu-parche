@@ -4,15 +4,18 @@ import { auth, db } from '@/firebase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Heart, Sparkles } from 'lucide-react'
+import Login from './Login'
 
 interface Match {
   id: string
   dateId: string
   users: string[]
   createdAt: number
+  plannedFor?: string
 }
 
 export default function Matches() {
+  const user = auth.currentUser
   const [matches, setMatches] = useState<Match[]>([])
   const [connCount, setConnCount] = useState(0)
 
@@ -35,6 +38,8 @@ export default function Matches() {
     }
     fetchMatches()
   }, [])
+
+  if (!user) return <Login />
 
   return (
     <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
@@ -92,6 +97,9 @@ export default function Matches() {
                     <p className="text-xs text-gray-500">
                       {new Date(m.createdAt).toLocaleDateString()}
                     </p>
+                    {m.plannedFor && (
+                      <p className="text-xs text-gray-500">Fecha: {m.plannedFor}</p>
+                    )}
                   </div>
                 </div>
               </CardContent>

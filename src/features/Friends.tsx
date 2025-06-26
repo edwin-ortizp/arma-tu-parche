@@ -13,14 +13,24 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Users, UserPlus, Copy, Check } from 'lucide-react'
+import Login from './Login'
+import { relationTypes } from '@/constants'
 
 export default function Friends() {
   const user = auth.currentUser
   const [pin, setPin] = useState<string>()
   const [pinInput, setPinInput] = useState('')
-  const [connections, setConnections] = useState<{ uid: string; name: string }[]>([])
+  const [connections, setConnections] = useState<{ uid: string; name: string; relation?: string }[]>([])
+  const [relationChoice, setRelationChoice] = useState(relationTypes[0])
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -35,6 +45,7 @@ export default function Friends() {
         const data = snap.data()
         setPin(data?.pin)
         const ids: string[] = data?.connections || []
+        const rels: Record<string, string> = data?.relationships || {}
         
         if (ids.length === 0) {
           setConnections([])
@@ -45,7 +56,11 @@ export default function Friends() {
           ids.map(async id => {
             try {
               const u = await getDoc(doc(db, 'users', id))
-              return { uid: id, name: u.data()?.displayName || 'Anon' }
+              return {
+                uid: id,
+                name: u.data()?.displayName || 'Anon',
+                relation: rels[id],
+              }
             } catch (err) {
               console.error('Error al cargar conexión:', id, err)
               return { uid: id, name: 'Error' }
@@ -53,14 +68,14 @@ export default function Friends() {
           })
         )
         setConnections(users)
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error al cargar datos en Friends:', err)
       }
     }
     load()
   }, [user])
 
-  if (!user) return null
+  if (!user) return <Login />
 
   const addConnection = async () => {
     if (!pinInput.trim()) return
@@ -90,25 +105,31 @@ export default function Friends() {
         return
       }
       
+      const relation = relationTypes.includes(relationChoice) ? relationChoice : relationTypes[0]
+
       // Update current user's connections
       await updateDoc(doc(db, 'users', user.uid), {
         connections: arrayUnion(other.id),
+        [`relationships.${other.id}`]: relation,
       })
-      
+
       // Update other user's connections
       await updateDoc(doc(db, 'users', other.id), {
         connections: arrayUnion(user.uid),
+        [`relationships.${user.uid}`]: relation,
       })
-      
-      setConnections(prev => [...prev, { uid: other.id, name: other.data().displayName }])
+
+      setConnections(prev => [...prev, { uid: other.id, name: other.data().displayName, relation }])
       setPinInput('')
+      setRelationChoice(relationTypes[0])
       alert('¡Conexión añadida exitosamente!')
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error al agregar conexión:', err)
-      if (err.code === 'permission-denied') {
+      const e = err as { code?: string; message?: string }
+      if (e.code === 'permission-denied') {
         alert('Error de permisos. Verifica que tienes acceso a la base de datos.')
       } else {
-        alert('Error al agregar conexión: ' + (err.message || 'Error desconocido'))
+        alert('Error al agregar conexión: ' + (e.message || 'Error desconocido'))
       }
     } finally {
       setLoading(false)
@@ -176,6 +197,18 @@ export default function Friends() {
               placeholder="Ingresa el PIN de tu amigo"
               className="border-green-200 focus:border-green-400"
             />
+            <Select value={relationChoice} onValueChange={setRelationChoice}>
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Tipo de vínculo" />
+              </SelectTrigger>
+              <SelectContent>
+                {relationTypes.map(rt => (
+                  <SelectItem key={rt} value={rt}>
+                    {rt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               onClick={addConnection}
               disabled={loading || !pinInput.trim()}
@@ -217,7 +250,7 @@ export default function Friends() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{c.name}</p>
-                    <p className="text-sm text-gray-500">Conectado</p>
+                    <p className="text-sm text-gray-500">{c.relation || 'Conectado'}</p>
                   </div>
                 </div>
               ))}
