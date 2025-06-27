@@ -18,20 +18,20 @@ export default function BottomNav({ current, onChange, isAdmin }: Props) {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-t shadow-lg z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-around py-3">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-50 m-4 mb-6 rounded-2xl">
+      <div className="max-w-md mx-auto px-4">
+        <div className="flex justify-around py-4">
           {items.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               onClick={() => onChange(key)}
-              className={`flex flex-col items-center text-xs focus:outline-none px-3 py-2 rounded-xl transition-all duration-300 min-w-0 ${
+              className={`flex flex-col items-center text-xs focus:outline-none px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-110 min-w-0 ${
                 current === key 
-                  ? 'text-primary bg-primary/10' 
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-white bg-gradient-to-r from-pink-500 to-purple-500 shadow-lg' 
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/20'
               }`}
             >
-              <Icon size={20} className="mb-1 flex-shrink-0" />
+              <Icon size={22} className="mb-1 flex-shrink-0" />
               <span className="font-medium text-xs truncate">{label}</span>
             </button>
           ))}

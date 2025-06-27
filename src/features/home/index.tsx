@@ -65,15 +65,16 @@ export default function HomePage() {
               description="Elige una conexión arriba para ver planes increíbles que pueden hacer juntos."
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
               {dates.map(date => (
-                <DateCard
-                  key={date.id}
-                  date={date}
-                  onLike={handleLikeDate}
-                  showLikeButton={isLogged && !!selected}
-                  isLoading={likingDateId === date.id}
-                />
+                <div key={date.id} className="max-w-sm mx-auto w-full">
+                  <DateCard
+                    date={date}
+                    onLike={handleLikeDate}
+                    showLikeButton={isLogged && !!selected}
+                    isLoading={likingDateId === date.id}
+                  />
+                </div>
               ))}
             </div>
           )}
