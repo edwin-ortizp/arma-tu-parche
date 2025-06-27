@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import './App.css'
-import Home from './features/Home'
-import Friends from './features/Friends'
-import Matches from './features/Matches'
-import Profile from './features/Profile'
-import Config from './features/Config'
-import Login from './features/Login'
+import HomePage from './features/home'
+import FriendsPage from './features/friends'
+import MatchesPage from './features/matches'
+import ProfilePage from './features/profile'
+import ConfigPage from './features/config'
+import LoginPage from './features/auth'
 import BottomNav from './components/BottomNav'
 import { useAuth } from './hooks/useAuth'
 import { Loader2 } from 'lucide-react'
@@ -26,7 +26,7 @@ function App() {
   }
 
   if (!user) {
-    return <Login />
+    return <LoginPage />
   }
 
 
@@ -84,11 +84,11 @@ function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {screen === 'home' && <Home />}
-        {screen === 'friends' && <Friends />}
-        {screen === 'matches' && <Matches />}
-        {screen === 'profile' && <Profile />}
-        {screen === 'config' && <Config />}
+        {screen === 'home' && <HomePage />}
+        {screen === 'friends' && <FriendsPage />}
+        {screen === 'matches' && <MatchesPage />}
+        {screen === 'profile' && <ProfilePage />}
+        {screen === 'config' && <ConfigPage />}
       </main>
 
       {/* Mobile Navigation */}

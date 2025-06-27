@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { LogIn } from 'lucide-react'
 
-export default function Login() {
+export default function LoginPage() {
   const signIn = async () => {
     try {
       const provider = new GoogleAuthProvider()
