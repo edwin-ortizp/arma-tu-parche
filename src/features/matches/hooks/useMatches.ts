@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
-import type { Match } from '@/types'
+import type { Match, Connection } from '@/types'
+
+interface MatchWithFriend extends Match {
+  friendInfo?: Connection
+  friendName?: string
+}
 
 export function useMatches() {
-  const [matches, setMatches] = useState<Match[]>([])
+  const [matches, setMatches] = useState<MatchWithFriend[]>([])
+  const [friends, setFriends] = useState<Connection[]>([])
+  const [selectedFriend, setSelectedFriend] = useState<string>('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,8 +35,50 @@ export function useMatches() {
       // Filter matches for current user
       const userMatches = allMatches.filter(m => m.users.includes(uid))
       
-      console.log('Matches encontrados:', userMatches)
-      setMatches(userMatches)
+      // Get friends info for each match
+      const matchesWithFriends: MatchWithFriend[] = await Promise.all(
+        userMatches.map(async (match): Promise<MatchWithFriend> => {
+          const friendId = match.users.find(id => id !== uid)
+          if (friendId) {
+            try {
+              const friendDoc = await getDoc(doc(db, 'users', friendId))
+              if (friendDoc.exists()) {
+                const friendData = friendDoc.data()
+                return {
+                  ...match,
+                  friendInfo: {
+                    uid: friendId,
+                    name: friendData.displayName || friendData.email || 'Usuario',
+                    relation: friendData.relation || 'Amigo'
+                  },
+                  friendName: friendData.displayName || friendData.email || 'Usuario'
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching friend info:', error)
+            }
+          }
+          return {
+            ...match,
+            friendName: 'Usuario desconocido'
+          }
+        })
+      )
+      
+      // Extract unique friends for filter
+      const uniqueFriends = matchesWithFriends
+        .map(m => m.friendInfo)
+        .filter((friendInfo): friendInfo is Connection => friendInfo !== undefined)
+        .reduce((acc, friendInfo) => {
+          if (!acc.find(f => f.uid === friendInfo.uid)) {
+            acc.push(friendInfo)
+          }
+          return acc
+        }, [] as Connection[])
+      
+      console.log('Matches encontrados:', matchesWithFriends)
+      setMatches(matchesWithFriends)
+      setFriends(uniqueFriends)
     } catch (err) {
       console.error('Error loading matches:', err)
       setError('Error al cargar matches')
@@ -37,6 +86,11 @@ export function useMatches() {
       setLoading(false)
     }
   }
+
+  // Filter matches based on selected friend
+  const filteredMatches = selectedFriend === 'all' 
+    ? matches 
+    : matches.filter(m => m.friendInfo?.uid === selectedFriend)
 
   useEffect(() => {
     fetchMatches()
@@ -47,5 +101,14 @@ export function useMatches() {
     return () => clearInterval(interval)
   }, [])
 
-  return { matches, loading, error, refetch: fetchMatches }
+  return { 
+    matches: filteredMatches, 
+    allMatches: matches,
+    friends, 
+    selectedFriend, 
+    setSelectedFriend,
+    loading, 
+    error, 
+    refetch: fetchMatches 
+  }
 }
