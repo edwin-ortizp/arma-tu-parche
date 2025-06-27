@@ -52,53 +52,49 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Mi Perfil"
         description="Gestiona tu información y preferencias"
-        icon={<User className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+        icon={<User className="w-5 h-5 text-white" />}
       />
 
       <div className="space-y-6">
         {/* User Info */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt="avatar"
-                    className="w-16 h-16 rounded-full"
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-white" />
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt="avatar"
+                      className="w-12 h-12 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">{user.displayName}</h2>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+              {connections.length > 0 && (
+                <div className="text-center">
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <Crown className="w-4 h-4" />
+                    <span className="text-sm font-medium">{connections.length} {connections.length === 1 ? 'amigo' : 'amigos'}</span>
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-foreground">{user.displayName}</h2>
-                <p className="text-muted-foreground">{user.email}</p>
-              </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Connections Count */}
-        {connections.length > 0 && (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">{connections.length}</h3>
-              <p className="text-sm text-muted-foreground">
-                {connections.length === 1 ? 'Amigo conectado' : 'Amigos conectados'}
-              </p>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Interests */}
         <Card>

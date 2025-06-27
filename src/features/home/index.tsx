@@ -42,13 +42,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className={`pb-20 ${selected ? 'space-y-4' : 'space-y-8'}`}>
+    <div className={`pb-20 ${selected ? 'space-y-4' : 'space-y-6'}`}>
       {/* Header dinámico basado en si hay compañero seleccionado */}
       {!isLogged || connections.length === 0 || selected === '' ? (
         <PageHeader
           title="Encuentra tu Plan"
           description="Descubre actividades perfectas para compartir"
-          icon={<Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+          icon={<Sparkles className="w-5 h-5 text-white" />}
           badge={{
             text: `${dates.length} planes disponibles`,
             className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
@@ -78,7 +78,7 @@ export default function HomePage() {
           tip="Ve a la sección Amigos para conectarte"
         />
       ) : (
-        <div className={`${selected ? 'space-y-4' : 'space-y-8'}`}>
+        <div className={`${selected ? 'space-y-4' : 'space-y-6'}`}>
           {isLogged && connections.length > 0 && (
             <CompanionSelector 
               connections={connections}

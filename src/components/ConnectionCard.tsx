@@ -10,11 +10,11 @@ interface ConnectionCardProps {
 
 export function ConnectionCard({ connection, className = '' }: ConnectionCardProps) {
   return (
-    <Card className={`hover:shadow-md transition-shadow duration-200 ${className}`}>
+    <Card className={className}>
       <CardContent className="p-4">
         <div className="flex items-center space-x-3">
           <Avatar className="h-12 w-12">
-            <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white font-semibold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-cyan-500 text-white font-semibold">
               {connection.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>

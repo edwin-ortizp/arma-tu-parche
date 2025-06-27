@@ -15,40 +15,35 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, icon, badge, actions }: PageHeaderProps) {
   return (
-    <div className="space-y-6">
-      {/* Icon and title */}
-      {icon && (
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary to-primary/80 rounded-full mb-4 shadow-lg">
+    <div className="flex items-center justify-between gap-4 py-2">
+      <div className="flex items-center gap-3">
+        {icon && (
+          <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full shadow-sm">
             {icon}
           </div>
-        </div>
-      )}
-      
-      {/* Title and actions */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+        )}
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">
             {title}
           </h1>
           {description && (
-            <p className="text-muted-foreground text-base md:text-lg">
+            <p className="text-muted-foreground text-sm md:text-base">
               {description}
             </p>
           )}
         </div>
-        
-        <div className="flex items-center gap-3">
-          {badge && (
-            <Badge 
-              variant={badge.variant || 'default'} 
-              className={badge.className}
-            >
-              {badge.text}
-            </Badge>
-          )}
-          {actions}
-        </div>
+      </div>
+      
+      <div className="flex items-center gap-3">
+        {badge && (
+          <Badge 
+            variant={badge.variant || 'default'} 
+            className={badge.className}
+          >
+            {badge.text}
+          </Badge>
+        )}
+        {actions}
       </div>
     </div>
   )

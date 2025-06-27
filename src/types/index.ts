@@ -10,7 +10,7 @@ export interface DatePlan {
   bgGradient: string
   goodForToday: boolean
   city?: string
-  relationType?: string
+  relationType?: string | string[] // Soporta tanto string como array para retrocompatibilidad
   experienceType?: string
   expiresAt?: string
 }

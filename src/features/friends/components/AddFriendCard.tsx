@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { UserPlus } from 'lucide-react'
-import { relationTypes } from '@/constants'
+import { connectionTypes } from '@/constants'
 
 interface AddFriendCardProps {
   onAddConnection: (pin: string, relation: string) => Promise<{ success: boolean }>
@@ -18,7 +18,7 @@ interface AddFriendCardProps {
 
 export function AddFriendCard({ onAddConnection }: AddFriendCardProps) {
   const [pinInput, setPinInput] = useState('')
-  const [relationChoice, setRelationChoice] = useState(relationTypes[0])
+  const [relationChoice, setRelationChoice] = useState(connectionTypes[0])
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async () => {
@@ -28,7 +28,7 @@ export function AddFriendCard({ onAddConnection }: AddFriendCardProps) {
     try {
       await onAddConnection(pinInput, relationChoice)
       setPinInput('')
-      setRelationChoice(relationTypes[0])
+      setRelationChoice(connectionTypes[0])
       alert('¡Conexión añadida exitosamente!')
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Error al agregar conexión')
@@ -53,18 +53,35 @@ export function AddFriendCard({ onAddConnection }: AddFriendCardProps) {
             placeholder="Ingresa el PIN de tu amigo"
             className="border-green-200 focus:border-green-400"
           />
-          <Select value={relationChoice} onValueChange={setRelationChoice}>
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="Tipo de vínculo" />
-            </SelectTrigger>
-            <SelectContent>
-              {relationTypes.map(rt => (
-                <SelectItem key={rt} value={rt}>
-                  {rt}
-                </SelectItem>
+          <div>
+            <label className="block text-sm font-medium text-green-800 mb-2">
+              ¿Cómo describes esta relación?
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {connectionTypes.map(type => (
+                <label 
+                  key={type} 
+                  className={`flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                    relationChoice === type
+                      ? 'bg-green-100 border-green-500 text-green-800 shadow-sm'
+                      : 'bg-white border-green-200 hover:border-green-300 hover:bg-green-50 text-green-700'
+                  }`}
+                >
+                  <input 
+                    type="radio" 
+                    name="relation" 
+                    value={type}
+                    checked={relationChoice === type}
+                    onChange={(e) => setRelationChoice(e.target.value)}
+                    className="sr-only"
+                  />
+                  <span className="text-sm font-medium capitalize">
+                    {type}
+                  </span>
+                </label>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
           <Button
             onClick={handleSubmit}
             disabled={loading || !pinInput.trim()}

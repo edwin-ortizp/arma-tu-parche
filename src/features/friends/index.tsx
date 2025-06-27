@@ -23,14 +23,14 @@ export default function FriendsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Mis Amigos"
         description="Conecta con tus amigos para encontrar planes juntos"
-        icon={<Users className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+        icon={<Users className="w-5 h-5 text-white" />}
         badge={{
           text: `${connections.length} ${connections.length === 1 ? 'amigo' : 'amigos'}`,
-          className: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+          className: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
         }}
       />
 

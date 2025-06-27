@@ -40,7 +40,7 @@ export default function MatchesPage() {
       <PageHeader
         title="Matches"
         description="Planes en los que coincidieron"
-        icon={<Heart className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+        icon={<Heart className="w-5 h-5 text-white" />}
         badge={{
           text: `${allMatches.length} ${allMatches.length === 1 ? 'match' : 'matches'}`,
           className: 'bg-gradient-to-r from-pink-500 to-red-500 text-white'
