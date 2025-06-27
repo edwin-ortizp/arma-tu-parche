@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { TinderCard } from './TinderCard'
 import { EmptyState } from '@/components/EmptyState'
@@ -15,6 +15,11 @@ interface TinderStackProps {
 export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
   const [currentDates, setCurrentDates] = useState(dates)
   const [isLiking, setIsLiking] = useState(false)
+
+  // Actualizar currentDates cuando cambien las dates prop
+  useEffect(() => {
+    setCurrentDates(dates)
+  }, [dates])
 
   const handleSwipe = async (direction: 'left' | 'right', dateId: string) => {
     setIsLiking(true)
@@ -64,7 +69,7 @@ export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
   const visibleCards = currentDates.slice(0, 3)
 
   return (
-    <div className="relative mx-auto w-full max-w-sm h-[600px] flex items-center justify-center">
+    <div className="relative mx-auto w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-[600px] md:h-[700px] flex items-center justify-center">
       <AnimatePresence>
         {visibleCards.map((date, index) => (
           <TinderCard

@@ -64,14 +64,52 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
     >
       <Card className="w-full h-full overflow-hidden bg-white shadow-2xl border-0">
         {/* Imagen de fondo */}
-        <div className="relative h-3/5 bg-cover bg-center bg-gray-200">
-          <img 
-            src={date.image} 
-            alt={date.title}
-            className="w-full h-full object-cover"
-          />
-          {/* Gradiente overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
+        <div className="relative h-3/5 bg-gray-200 overflow-hidden">
+          {/* Detectar si es una URL de imagen o un emoji */}
+          {date.image.startsWith('http') || date.image.startsWith('/') ? (
+            <img 
+              src={date.image} 
+              alt={date.title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Si la imagen falla, mostrar fallback con emoji y gradiente
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                const parent = target.parentElement
+                if (parent) {
+                  parent.style.background = `linear-gradient(135deg, ${date.bgGradient || 'from-purple-400 to-pink-400'})`
+                  const fallbackDiv = document.createElement('div')
+                  fallbackDiv.className = 'absolute inset-0 flex items-center justify-center'
+                  fallbackDiv.innerHTML = `
+                    <div class="text-white text-center">
+                      <div class="text-6xl mb-2">🎯</div>
+                      <div class="text-lg font-semibold">${date.category}</div>
+                    </div>
+                  `
+                  parent.appendChild(fallbackDiv)
+                }
+              }}
+            />
+          ) : (
+            /* Si no es URL, mostrar como emoji con gradiente de fondo */
+            <div 
+              className={`w-full h-full bg-gradient-to-br ${date.bgGradient || 'from-purple-400 to-pink-400'} flex items-center justify-center`}
+            >
+              <div className="text-white text-center">
+                <div className="text-8xl mb-4 drop-shadow-lg filter">
+                  {date.image}
+                </div>
+                <div className="text-xl font-semibold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                  {date.category}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Gradiente overlay solo para imágenes reales */}
+          {(date.image.startsWith('http') || date.image.startsWith('/')) && (
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
+          )}
           
           {/* Overlay para mostrar dirección del swipe */}
           <motion.div
@@ -92,17 +130,19 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
             )}
           </motion.div>
 
-          {/* Badge de categoría */}
-          <div className="absolute top-4 left-4">
-            <Badge className="bg-white/90 text-gray-800 font-medium">
-              {date.category}
-            </Badge>
-          </div>
+          {/* Badge de categoría - solo para imágenes reales */}
+          {(date.image.startsWith('http') || date.image.startsWith('/')) && (
+            <div className="absolute top-4 left-4">
+              <Badge className="bg-white/90 text-gray-800 font-medium">
+                {date.category}
+              </Badge>
+            </div>
+          )}
 
           {/* Badge "Good for today" */}
           {date.goodForToday && (
             <div className="absolute top-4 right-4">
-              <Badge className="bg-green-500 text-white font-medium">
+              <Badge className="bg-green-500 text-white font-medium shadow-lg">
                 ¡Perfecto para hoy!
               </Badge>
             </div>
