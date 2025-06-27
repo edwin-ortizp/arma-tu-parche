@@ -1,0 +1,97 @@
+import { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { TinderCard } from './TinderCard'
+import { EmptyState } from '@/components/EmptyState'
+import { RefreshCw, Heart } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import type { DatePlan } from '@/types'
+
+interface TinderStackProps {
+  dates: DatePlan[]
+  onLike: (dateId: string) => Promise<void>
+  onPass: (dateId: string) => void
+}
+
+export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
+  const [currentDates, setCurrentDates] = useState(dates)
+  const [isLiking, setIsLiking] = useState(false)
+
+  const handleSwipe = async (direction: 'left' | 'right', dateId: string) => {
+    setIsLiking(true)
+    
+    try {
+      if (direction === 'right') {
+        await onLike(dateId)
+      } else {
+        onPass(dateId)
+      }
+      
+      // Remove the card from the stack
+      setCurrentDates(prev => prev.filter(d => d.id !== dateId))
+    } catch (error) {
+      console.error('Error handling swipe:', error)
+    } finally {
+      setIsLiking(false)
+    }
+  }
+
+  const resetStack = () => {
+    setCurrentDates(dates)
+  }
+
+  if (currentDates.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] space-y-6">
+        <EmptyState
+          icon={<Heart className="w-12 h-12 text-pink-500" />}
+          title="¡Has visto todos los planes!"
+          description="No hay más planes disponibles por ahora. Vuelve más tarde para descubrir nuevas actividades."
+        />
+        <Button
+          onClick={resetStack}
+          variant="outline"
+          className="mt-4"
+          disabled={dates.length === 0}
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Ver de nuevo
+        </Button>
+      </div>
+    )
+  }
+
+  // Only show up to 3 cards in the stack for performance
+  const visibleCards = currentDates.slice(0, 3)
+
+  return (
+    <div className="relative mx-auto w-full max-w-sm h-[600px] flex items-center justify-center">
+      <AnimatePresence>
+        {visibleCards.map((date, index) => (
+          <TinderCard
+            key={date.id}
+            date={date}
+            onSwipe={handleSwipe}
+            isTop={index === 0}
+            zIndex={visibleCards.length - index}
+          />
+        ))}
+      </AnimatePresence>
+      
+      {/* Loading overlay */}
+      {isLiking && (
+        <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center z-50">
+          <div className="bg-white rounded-full p-3 shadow-lg">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary"></div>
+          </div>
+        </div>
+      )}
+      
+      {/* Instructions */}
+      <div className="absolute bottom-[-80px] left-1/2 transform -translate-x-1/2 text-center">
+        <p className="text-sm text-muted-foreground">
+          Desliza → para me gusta, ← para pasar
+        </p>
+      </div>
+    </div>
+  )
+}

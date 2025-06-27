@@ -1,21 +1,20 @@
 import { Sparkles, Users } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { EmptyState } from '@/components/EmptyState'
-import { DateCard } from './components/DateCard'
 import { CompanionSelector } from './components/CompanionSelector'
+import { TinderStack } from './components/TinderStack'
 import { useHomePage } from './hooks/useHomePage'
 
 export default function HomePage() {
   const {
     selected,
     setSelected,
-    likingDateId,
-    user,
     isLogged,
     dates,
     connections,
     loading,
     handleLikeDate,
+    handlePassDate,
   } = useHomePage()
 
   if (loading) {
@@ -30,16 +29,33 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Encuentra tu Plan"
-        description="Descubre actividades perfectas para compartir"
-        icon={<Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white" />}
-        badge={{
-          text: `${dates.length} planes disponibles`,
-          className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
-        }}
-      />
+    <div className={`pb-20 ${selected ? 'space-y-4' : 'space-y-8'}`}>
+      {/* Header dinámico basado en si hay compañero seleccionado */}
+      {!isLogged || connections.length === 0 || selected === '' ? (
+        <PageHeader
+          title="Encuentra tu Plan"
+          description="Descubre actividades perfectas para compartir"
+          icon={<Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+          badge={{
+            text: `${dates.length} planes disponibles`,
+            className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+          }}
+        />
+      ) : (
+        /* Header compacto cuando ya hay compañero seleccionado */
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Planes para ti</h1>
+            <p className="text-sm text-muted-foreground">
+              {dates.length} planes disponibles
+            </p>
+          </div>
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4" />
+            <span>¡Desliza para explorar!</span>
+          </div>
+        </div>
+      )}
 
       {isLogged && connections.length === 0 ? (
         <EmptyState
@@ -49,12 +65,13 @@ export default function HomePage() {
           tip="Ve a la sección Amigos para conectarte"
         />
       ) : (
-        <div className="space-y-8">
+        <div className={`${selected ? 'space-y-4' : 'space-y-8'}`}>
           {isLogged && connections.length > 0 && (
             <CompanionSelector 
               connections={connections}
               selected={selected}
               onSelectionChange={setSelected}
+              compact={selected !== ''}
             />
           )}
 
@@ -65,17 +82,12 @@ export default function HomePage() {
               description="Elige una conexión arriba para ver planes increíbles que pueden hacer juntos."
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-              {dates.map(date => (
-                <div key={date.id} className="max-w-sm mx-auto w-full">
-                  <DateCard
-                    date={date}
-                    onLike={handleLikeDate}
-                    showLikeButton={isLogged && !!selected}
-                    isLoading={likingDateId === date.id}
-                  />
-                </div>
-              ))}
+            <div className="flex justify-center">
+              <TinderStack
+                dates={dates}
+                onLike={handleLikeDate}
+                onPass={handlePassDate}
+              />
             </div>
           )}
         </div>

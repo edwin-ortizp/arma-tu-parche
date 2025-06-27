@@ -31,6 +31,11 @@ export function useHomePage() {
     }
   }
 
+  const handlePassDate = (dateId: string) => {
+    console.log('Passed on date:', dateId)
+    // Aquí podrías agregar lógica para marcar como "pasado" si necesitas tracking
+  }
+
   return {
     // State
     selected,
@@ -48,5 +53,6 @@ export function useHomePage() {
     
     // Actions
     handleLikeDate,
+    handlePassDate,
   }
 }
