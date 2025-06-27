@@ -1,92 +1,98 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import Home from './features/Home'
 import Friends from './features/Friends'
 import Matches from './features/Matches'
 import Profile from './features/Profile'
 import Config from './features/Config'
+import Login from './features/Login'
 import BottomNav from './components/BottomNav'
-import { auth, db } from './firebase'
-import { onAuthStateChanged } from 'firebase/auth'
-import {
-  doc,
-  setDoc,
-  getDoc,
-  query,
-  collection,
-  where,
-  getDocs,
-} from 'firebase/firestore'
-
-interface UserData {
-  role: string
-  connections: string[]
-  pin: string
-}
+import { useAuth } from './hooks/useAuth'
+import { Loader2 } from 'lucide-react'
 
 function App() {
   const [screen, setScreen] = useState('home')
-  const [userData, setUserData] = useState<UserData | undefined>()
+  const { user, userData, loading } = useAuth()
 
-  useEffect(() => {
-    return onAuthStateChanged(auth, async u => {
-      if (u) {
-        try {
-          const ref = doc(db, 'users', u.uid)
-          let snap = await getDoc(ref)
-          
-          if (!snap.exists()) {
-            // Generar PIN único
-            let pin = ''
-            for (let i = 0; i < 5; i++) {
-              pin = Math.floor(1000 + Math.random() * 9000).toString()
-              const q = query(collection(db, 'users'), where('pin', '==', pin))
-              const qs = await getDocs(q)
-              if (qs.empty) break
-            }
-            
-            const userData = {
-              uid: u.uid,
-              displayName: u.displayName,
-              email: u.email,
-              photoURL: u.photoURL,
-              pin,
-              role: 'user',
-              connections: [],
-            }
-            
-            await setDoc(ref, userData)
-            snap = await getDoc(ref)
-          }
-          
-          setUserData(snap.data() as UserData)
-        } catch (error) {
-          console.error('Error en la gestión del usuario:', error)
-          alert('Error al crear/cargar usuario: ' + (error as Error).message)
-        }
-      } else {
-        setUserData(undefined)
-      }
-    })
-  }, [])
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span className="text-muted-foreground">Cargando...</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Login />
+  }
 
 
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-200" 
-         style={{
-           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.3' fill-rule='evenodd'%3E%3Cpath d='m0 40l40-40h-40v40zm40 0v-40h-40l40 40z'/%3E%3C/g%3E%3C/svg%3E")`,
-           backgroundSize: '40px 40px'
-         }}>
-      {/* Contenedor boxed para toda la aplicación */}
-      <div className="min-h-screen w-full max-w-sm md:max-w-2xl md:w-1/2 mx-auto bg-white shadow-xl relative flex flex-col">
-        <div className="flex-1 py-8 pb-24">
-          {screen === 'home' && <Home />}
-          {screen === 'friends' && <Friends />}
-          {screen === 'matches' && <Matches />}
-          {screen === 'profile' && <Profile />}
-          {screen === 'config' && <Config />}
+    <div className="min-h-screen bg-background">
+      {/* Header/Navigation Bar */}
+      <header className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">C</span>
+              </div>
+              <h1 className="text-xl font-bold text-foreground">CitApp</h1>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              {[
+                { key: 'home', label: 'Inicio', icon: 'home' },
+                { key: 'friends', label: 'Amigos', icon: 'users' },
+                { key: 'matches', label: 'Matches', icon: 'heart' },
+                { key: 'profile', label: 'Perfil', icon: 'user' },
+                ...(userData?.role === 'admin' ? [{ key: 'config', label: 'Config', icon: 'settings' }] : [])
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setScreen(key)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    screen === key 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* User Avatar */}
+            <div className="flex items-center space-x-3">
+              <img 
+                src={user.photoURL || ''} 
+                alt="Avatar" 
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="hidden md:block text-sm text-muted-foreground">
+                {user.displayName}
+              </span>
+            </div>
+          </nav>
         </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {screen === 'home' && <Home />}
+        {screen === 'friends' && <Friends />}
+        {screen === 'matches' && <Matches />}
+        {screen === 'profile' && <Profile />}
+        {screen === 'config' && <Config />}
+      </main>
+
+      {/* Mobile Navigation */}
+      <div className="md:hidden">
         <BottomNav current={screen} onChange={setScreen} isAdmin={userData?.role === 'admin'} />
       </div>
     </div>

@@ -42,7 +42,7 @@ export default function Matches() {
   if (!user) return <Login />
 
   return (
-    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
+    <div className="space-y-6 w-full max-w-4xl mx-auto">
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-pink-500 to-red-500 rounded-full mb-6 shadow-lg">
           <Heart className="w-10 h-10 text-white" />
@@ -71,15 +71,16 @@ export default function Matches() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Tus Matches</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Tus Matches</h2>
             <Badge className="bg-gradient-to-r from-pink-500 to-red-500 text-white">
               {matches.length} {matches.length === 1 ? 'match' : 'matches'}
             </Badge>
           </div>
           
-          {matches.map(m => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {matches.map(m => (
             <Card key={m.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
               <div className="h-2 bg-gradient-to-r from-pink-500 to-red-500" />
               <CardContent className="p-4">
@@ -104,7 +105,8 @@ export default function Matches() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>

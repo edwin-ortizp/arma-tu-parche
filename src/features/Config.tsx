@@ -179,7 +179,7 @@ export default function Config() {
 
   if (!allowed) {
     return (
-      <div className="px-6 py-4 w-full max-w-sm mx-auto">
+      <div className="space-y-6 w-full">
         <Card className="bg-gradient-to-br from-red-50 to-pink-50 border-red-200">
           <CardContent className="text-center py-10">
             <div className="w-16 h-16 bg-gradient-to-br from-red-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -194,7 +194,7 @@ export default function Config() {
   }
 
   return (
-    <div className="px-6 py-4 space-y-6 w-full max-w-sm mx-auto">
+    <div className="space-y-6 w-full">
       {/* Header */}
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mb-6 shadow-lg">

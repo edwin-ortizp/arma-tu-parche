@@ -51,7 +51,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="px-6 py-4 space-y-8 w-full max-w-sm mx-auto">
+    <div className="space-y-6 w-full max-w-4xl mx-auto">
       <div className="text-center">
         <div className="relative inline-block mb-6">
           {user.photoURL ? (
