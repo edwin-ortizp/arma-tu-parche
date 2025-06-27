@@ -36,18 +36,18 @@ Este proyecto usa una rama `production` separada para controlar cuándo se publi
 ### 🔗 **URLs**
 
 - **Desarrollo local**: `http://localhost:5173`
-- **GitHub Pages**: `https://edwin-ortizp.github.io/citapp/`
+- **GitHub Pages**: `https://edwin-ortizp.github.io/arma-tu-parche/`
 
 ### ⚡ **Deployment Manual (Opcional)**
 
 También puedes triggerar deployment manualmente desde cualquier rama:
-1. Ve a: `https://github.com/edwin-ortizp/citapp/actions`
+1. Ve a: `https://github.com/edwin-ortizp/arma-tu-parche/actions`
 2. Selecciona "Deploy to GitHub Pages"
 3. Click "Run workflow"
 
 ### 🛠 **Configuración**
 
-- **Base path**: `/citapp/` (configurado automáticamente en producción)
+- **Base path**: `/arma-tu-parche/` (configurado automáticamente en producción)
 - **SPA Routing**: Configurado con 404.html para rutas client-side
 - **Build chunks**: Optimizado para carga rápida
 

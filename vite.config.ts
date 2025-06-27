@@ -5,7 +5,7 @@ import Pages from 'vite-plugin-pages';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/citapp/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/arma-tu-parche/' : '/',
   plugins: [
     react(),
     Pages({
