@@ -63,8 +63,8 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
       }}
     >
       <Card className="w-full h-full overflow-hidden bg-white shadow-2xl border-0">
-        {/* Imagen de fondo */}
-        <div className="relative h-3/5 bg-gray-200 overflow-hidden">
+        {/* Imagen de fondo reducida */}
+        <div className="relative h-2/5 bg-gray-200 overflow-hidden">
           {/* Detectar si es una URL de imagen o un emoji */}
           {date.image.startsWith('http') || date.image.startsWith('/') ? (
             <img 
@@ -93,13 +93,13 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
           ) : (
             /* Si no es URL, mostrar como emoji con gradiente de fondo */
             <div 
-              className={`w-full h-full bg-gradient-to-br ${date.bgGradient || 'from-purple-400 to-pink-400'} flex items-center justify-center`}
+              className={`w-full h-full bg-gradient-to-br ${date.bgGradient || 'from-blue-400 to-cyan-500'} flex items-center justify-center`}
             >
               <div className="text-white text-center">
-                <div className="text-8xl mb-4 drop-shadow-lg filter">
+                <div className="text-5xl mb-2 drop-shadow-lg filter">
                   {date.image}
                 </div>
-                <div className="text-xl font-semibold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                <div className="text-sm font-semibold bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
                   {date.category}
                 </div>
               </div>
@@ -149,55 +149,62 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
           )}
         </div>
 
-        {/* Contenido inferior */}
-        <div className="h-2/5 p-6 flex flex-col justify-between">
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 line-clamp-2">
+        {/* Contenido inferior ampliado */}
+        <div className="h-3/5 p-6 flex flex-col justify-between">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
               {date.title}
             </h3>
-            <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+            <p className="text-gray-600 text-base line-clamp-4 mb-4 leading-relaxed">
               {date.description}
             </p>
           </div>
 
           {/* Información adicional */}
-          <div className="space-y-2">
-            <div className="flex items-center text-sm text-gray-500">
-              <Clock className="w-4 h-4 mr-2" />
-              <span>{date.duration}</span>
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+            <div className="flex items-center text-sm text-gray-600">
+              <Clock className="w-4 h-4 mr-2 text-blue-500" />
+              <span className="font-medium">{date.duration}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <DollarSign className="w-4 h-4 mr-2" />
-              <span>{date.cost}</span>
+            <div className="flex items-center text-sm text-gray-600">
+              <DollarSign className="w-4 h-4 mr-2 text-green-500" />
+              <span className="font-medium">{date.cost}</span>
             </div>
             {date.city && (
-              <div className="flex items-center text-sm text-gray-500">
-                <MapPin className="w-4 h-4 mr-2" />
-                <span>{date.city}</span>
+              <div className="flex items-center text-sm text-gray-600 col-span-2">
+                <MapPin className="w-4 h-4 mr-2 text-red-500" />
+                <span className="font-medium">{date.city}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Botones de acción - solo visibles en la carta superior */}
+        {/* Botones de acción - posicionados en los lados para no tapar información */}
         {isTop && (
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-4">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-14 h-14 rounded-full border-2 border-red-500 bg-white hover:bg-red-50 group"
-              onClick={() => handleButtonClick('left')}
-            >
-              <X className="w-6 h-6 text-red-500 group-hover:scale-110 transition-transform" />
-            </Button>
-            <Button
-              size="lg"
-              className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 group"
-              onClick={() => handleButtonClick('right')}
-            >
-              <Heart className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-            </Button>
-          </div>
+          <>
+            {/* Botón de dislike - lado izquierdo */}
+            <div className="absolute bottom-6 left-6">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-16 h-16 rounded-full border-3 border-red-500 bg-white hover:bg-red-50 group shadow-lg hover:shadow-xl transition-all"
+                onClick={() => handleButtonClick('left')}
+              >
+                <X className="w-8 h-8 text-red-500 group-hover:scale-125 transition-transform" />
+              </Button>
+            </div>
+            
+            {/* Botón de like - lado derecho */}
+            <div className="absolute bottom-6 right-6">
+              <Button
+                size="lg"
+                className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 group shadow-lg hover:shadow-xl transition-all"
+                onClick={() => handleButtonClick('right')}
+              >
+                <Heart className="w-8 h-8 text-white group-hover:scale-125 transition-transform" />
+              </Button>
+            </div>
+          </>
         )}
       </Card>
     </motion.div>

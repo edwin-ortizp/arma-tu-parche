@@ -11,66 +11,58 @@ interface CompanionSelectorProps {
 }
 
 export function CompanionSelector({ connections, selected, onSelectionChange, compact = false }: CompanionSelectorProps) {
-  if (connections.length === 0) {
-    return (
-      <Card className="bg-muted/50">
-        <CardHeader>
-          <CardTitle className="text-xl">Selecciona tu Compañero</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            Aún no tienes conexiones. ¡Agrega amigos para empezar a planificar juntos!
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
+  // Crear conexión especial para "Solo"
+  const soloConnection = {
+    uid: 'solo',
+    name: 'Solo',
+    relation: 'solo'
+  } as Connection
+  
+  // Agregar "Solo" a las opciones
+  const allConnections = [soloConnection, ...connections]
 
   // Modo compacto: solo muestra el compañero seleccionado y un botón para cambiar
   if (compact && selected) {
-    const selectedConnection = connections.find(c => c.uid === selected)
+    const selectedConnection = allConnections.find(c => c.uid === selected)
     
     if (selectedConnection) {
       return (
-        <Card className="bg-muted/50">
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10 ring-2 ring-background">
-                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-sm font-semibold">
-                    {selectedConnection.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">Planificando con {selectedConnection.name}</p>
-                  {selectedConnection.relation && (
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {selectedConnection.relation}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={() => onSelectionChange('')}
-                className="text-sm text-brand-primary hover:text-brand-primary/80 font-medium"
-              >
-                Cambiar
-              </button>
+        <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
+          <div className="flex items-center space-x-2">
+            <Avatar className="w-8 h-8">
+              <AvatarFallback className={`text-white text-xs font-semibold ${
+                selectedConnection.uid === 'solo' 
+                  ? 'bg-gradient-to-br from-gray-400 to-slate-500'
+                  : 'bg-gradient-to-br from-blue-400 to-cyan-500'
+              }`}>
+                {selectedConnection.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium text-sm">
+                {selectedConnection.uid === 'solo' ? 'Planes para mí' : `Con ${selectedConnection.name}`}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <button
+            onClick={() => onSelectionChange('')}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Cambiar
+          </button>
+        </div>
       )
     }
   }
 
   return (
     <Card className="bg-muted/50">
-      <CardHeader>
-        <CardTitle className="text-xl">Selecciona tu Compañero</CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">¿Con quién planeas?</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {connections.map(connection => (
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+          {allConnections.map(connection => (
             <button
               key={connection.uid}
               onClick={() => onSelectionChange(connection.uid)}
@@ -91,22 +83,21 @@ export function CompanionSelector({ connections, selected, onSelectionChange, co
               
               {/* Avatar */}
               <div className="flex flex-col items-center space-y-2">
-                <Avatar className="w-12 h-12 ring-2 ring-background">
-                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-lg font-semibold">
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback className={`text-white text-sm font-semibold ${
+                    connection.uid === 'solo' 
+                      ? 'bg-gradient-to-br from-gray-400 to-slate-500'
+                      : 'bg-gradient-to-br from-blue-400 to-cyan-500'
+                  }`}>
                     {connection.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 
                 {/* Nombre */}
                 <div className="text-center">
-                  <p className="text-sm font-medium truncate max-w-[80px]">
+                  <p className="text-xs font-medium truncate max-w-[60px]">
                     {connection.name}
                   </p>
-                  {connection.relation && (
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {connection.relation}
-                    </p>
-                  )}
                 </div>
               </div>
             </button>

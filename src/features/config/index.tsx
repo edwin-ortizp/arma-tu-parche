@@ -230,13 +230,13 @@ export default function ConfigPage() {
         }}
         actions={
           <div className="flex gap-2">
-            <Button onClick={() => setView('create')} variant="outline">
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo
+            <Button onClick={() => setView('create')} variant="outline" size="sm">
+              <Plus className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Nuevo</span>
             </Button>
-            <Button onClick={() => setView('import')} variant="outline">
-              <Upload className="w-4 h-4 mr-2" />
-              Importar
+            <Button onClick={() => setView('import')} variant="outline" size="sm">
+              <Upload className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Importar</span>
             </Button>
           </div>
         }
@@ -347,31 +347,35 @@ export default function ConfigPage() {
                                 🔥 HOY
                               </span>
                             )}
-                            {!plan.active && (
-                              <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                                Inactivo
-                              </span>
-                            )}
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
+                              plan.active 
+                                ? 'bg-green-100 border-green-300' 
+                                : 'bg-red-100 border-red-300'
+                            }`}>
+                              {plan.active ? '✓ Activo' : '✗ Inactivo'}
+                            </span>
                           </div>
                           <p className="text-gray-600 text-sm line-clamp-2 mb-3">{plan.description}</p>
                         </div>
                       </div>
-                      <div className="flex space-x-1 flex-shrink-0 ml-3">
+                      <div className="flex items-center gap-1 flex-shrink-0 ml-3">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleEdit(plan)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                          title="Editar plan"
                         >
-                          <Edit className="w-3 h-3" />
+                          <Edit className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="destructive"
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(plan.id)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                          title="Eliminar plan"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -381,13 +385,28 @@ export default function ConfigPage() {
                         {plan.category}
                       </Badge>
                       {plan.relationType && (
-                        Array.isArray(plan.relationType) 
-                          ? plan.relationType.map(type => (
-                              <Badge key={type} className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
-                                {type}
-                              </Badge>
-                            ))
-                          : <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">{plan.relationType}</Badge>
+Array.isArray(plan.relationType) 
+                          ? plan.relationType.map(type => {
+                              const style = type === 'pareja' ? { backgroundColor: '#fce7f3', borderColor: '#f9a8d4', color: '#831843' } :
+                                           type === 'amigos' ? { backgroundColor: '#dbeafe', borderColor: '#93c5fd', color: '#1e3a8a' } :
+                                           type === 'familia' ? { backgroundColor: '#dcfce7', borderColor: '#86efac', color: '#14532d' } :
+                                           type === 'solo' ? { backgroundColor: '#f3f4f6', borderColor: '#d1d5db', color: '#374151' } :
+                                           { backgroundColor: '#e0e7ff', borderColor: '#a5b4fc', color: '#3730a3' }
+                              return (
+                                <Badge key={type} variant="outline" className="text-xs font-medium" style={style}>
+                                  {type}
+                                </Badge>
+                              )
+                            })
+                          : (() => {
+                              const type = plan.relationType as string
+                              const style = type === 'pareja' ? { backgroundColor: '#fce7f3', borderColor: '#f9a8d4', color: '#831843' } :
+                                           type === 'amigos' ? { backgroundColor: '#dbeafe', borderColor: '#93c5fd', color: '#1e3a8a' } :
+                                           type === 'familia' ? { backgroundColor: '#dcfce7', borderColor: '#86efac', color: '#14532d' } :
+                                           type === 'solo' ? { backgroundColor: '#f3f4f6', borderColor: '#d1d5db', color: '#374151' } :
+                                           { backgroundColor: '#e0e7ff', borderColor: '#a5b4fc', color: '#3730a3' }
+                              return <Badge variant="outline" className="text-xs font-medium" style={style}>{type}</Badge>
+                            })()
                       )}
                       {plan.experienceType && (
                         <Badge variant="outline" className="text-xs">

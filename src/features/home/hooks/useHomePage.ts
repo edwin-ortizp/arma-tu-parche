@@ -17,7 +17,10 @@ export function useHomePage() {
     
     try {
       setLikingDateId(dateId)
-      const result = await likeDate(dateId, selected)
+      
+      // Si es "solo", usar el ID del usuario como compañero
+      const companionId = selected === 'solo' ? user?.uid || 'solo' : selected
+      const result = await likeDate(dateId, companionId)
       
       // Solo mostrar feedback visual sutil, sin alerts molestos
       console.log(result.hasMatch ? 'Match creado! 🎉' : 'Plan guardado! ✨')
