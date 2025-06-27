@@ -50,10 +50,20 @@ También puedes triggerar deployment manualmente desde cualquier rama:
 - **Base path**: `/arma-tu-parche/` (configurado automáticamente en producción)
 - **SPA Routing**: Configurado con 404.html para rutas client-side
 - **Build chunks**: Optimizado para carga rápida
+- **GitHub Pages**: Configurado para usar rama `gh-pages` (solo contenido de /dist)
 
 ### 📝 **Notas**
 
 - Los cambios en `main` NO se publican automáticamente
 - Solo los cambios en `production` se publican
+- GitHub Actions crea automáticamente rama `gh-pages` con solo contenido compilado
+- NO se publica código fuente, solo archivos optimizados de /dist
 - Esto te da control total sobre qué versiones van a producción
 - Ideal para testing antes de publicar
+
+### 🔧 **Configuración de GitHub Pages**
+
+Después del primer deployment, configura en GitHub:
+1. Ve a: Settings → Pages
+2. Source: "Deploy from a branch"
+3. Branch: "gh-pages" / (root)
