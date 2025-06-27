@@ -8,13 +8,14 @@ import type { DatePlan } from '@/types'
 
 interface TinderStackProps {
   dates: DatePlan[]
-  onLike: (dateId: string) => Promise<void>
-  onPass: (dateId: string) => void
+  onLike: (dateId: string) => Promise<{ hasMatch: boolean; isNewMatch: boolean }>
+  onPass: (dateId: string) => Promise<void>
 }
 
 export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
   const [currentDates, setCurrentDates] = useState(dates)
   const [isLiking, setIsLiking] = useState(false)
+  const [showMatchAnimation, setShowMatchAnimation] = useState(false)
 
   // Actualizar currentDates cuando cambien las dates prop
   useEffect(() => {
@@ -26,9 +27,15 @@ export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
     
     try {
       if (direction === 'right') {
-        await onLike(dateId)
+        const result = await onLike(dateId)
+        
+        // Si hay match, mostrar animación
+        if (result && result.hasMatch && result.isNewMatch) {
+          setShowMatchAnimation(true)
+          setTimeout(() => setShowMatchAnimation(false), 3000) // 3 segundos
+        }
       } else {
-        onPass(dateId)
+        await onPass(dateId)
       }
       
       // Remove the card from the stack
@@ -87,6 +94,24 @@ export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
         <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center z-50">
           <div className="bg-white rounded-full p-3 shadow-lg">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary"></div>
+          </div>
+        </div>
+      )}
+      
+      {/* Match Animation */}
+      {showMatchAnimation && (
+        <div className="absolute inset-0 bg-black/70 rounded-lg flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="text-6xl mb-4 animate-bounce">🎉</div>
+            <h2 className="text-3xl font-bold text-white mb-2">¡MATCH!</h2>
+            <p className="text-white text-lg">¡A ambos les gusta este plan!</p>
+            <div className="flex justify-center mt-4">
+              <div className="flex space-x-2">
+                <div className="w-3 h-3 bg-pink-500 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse delay-200"></div>
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse delay-400"></div>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -52,4 +52,5 @@ export interface Match {
   users: string[]
   createdAt: number
   plannedFor?: string
+  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }

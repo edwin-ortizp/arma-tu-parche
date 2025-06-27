@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import type { Match } from '@/types'
 
@@ -8,45 +8,44 @@ export function useMatches() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      const uid = auth.currentUser?.uid
-      if (!uid) {
-        setLoading(false)
-        return
-      }
-
-      try {
-        setError(null)
-        
-        // Get user connections
-        const userSnap = await getDoc(doc(db, 'users', uid))
-        const connections: string[] = userSnap.data()?.connections || []
-        
-        // Get all matches
-        const matchesSnap = await getDocs(collection(db, 'matches'))
-        const allMatches = matchesSnap.docs.map(d => ({ 
-          id: d.id, 
-          ...(d.data() as Omit<Match, 'id'>) 
-        }))
-        
-        // Filter matches for current user with their connections
-        const userMatches = allMatches.filter(m => {
-          const other = m.users.find(u => u !== uid)
-          return other && connections.includes(other)
-        })
-        
-        setMatches(userMatches)
-      } catch (err) {
-        console.error('Error loading matches:', err)
-        setError('Error al cargar matches')
-      } finally {
-        setLoading(false)
-      }
+  const fetchMatches = async () => {
+    const uid = auth.currentUser?.uid
+    if (!uid) {
+      setLoading(false)
+      return
     }
 
+    try {
+      setError(null)
+      
+      // Get all matches where current user participates
+      const matchesSnap = await getDocs(collection(db, 'matches'))
+      const allMatches = matchesSnap.docs.map(d => ({ 
+        id: d.id, 
+        ...(d.data() as Omit<Match, 'id'>) 
+      }))
+      
+      // Filter matches for current user
+      const userMatches = allMatches.filter(m => m.users.includes(uid))
+      
+      console.log('Matches encontrados:', userMatches)
+      setMatches(userMatches)
+    } catch (err) {
+      console.error('Error loading matches:', err)
+      setError('Error al cargar matches')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchMatches()
+    
+    // Refresh matches every 30 seconds to catch new ones
+    const interval = setInterval(fetchMatches, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
-  return { matches, loading, error }
+  return { matches, loading, error, refetch: fetchMatches }
 }

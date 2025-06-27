@@ -9,31 +9,41 @@ export function useHomePage() {
   
   const { user } = useAuth()
   const isLogged = !!user
-  const { dates, loading: datesLoading, likeDate } = useDates(isLogged)
+  const { dates, loading: datesLoading, likeDate, dislikeDate, refreshDates } = useDates(isLogged)
   const { connections, loading: connectionsLoading } = useConnections()
 
   const handleLikeDate = async (dateId: string) => {
-    if (!selected) return
+    if (!selected) return { hasMatch: false, isNewMatch: false }
     
     try {
       setLikingDateId(dateId)
       const result = await likeDate(dateId, selected)
       
+      // Solo mostrar feedback visual sutil, sin alerts molestos
+      console.log(result.hasMatch ? 'Match creado! 🎉' : 'Plan guardado! ✨')
+      
+      // Refrescar la lista de dates para evitar duplicados
       if (result.hasMatch) {
-        alert('¡Match creado! 🎉')
-      } else {
-        alert('¡Plan guardado! ✨')
+        setTimeout(() => refreshDates(), 1000) // Pequeño delay para que se procese el match
       }
+      
+      return result
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Error al procesar el like')
+      console.error('Error al procesar el like:', error)
+      // Solo mostrar error si es crítico
+      throw error
     } finally {
       setLikingDateId(null)
     }
   }
 
-  const handlePassDate = (dateId: string) => {
-    console.log('Passed on date:', dateId)
-    // Aquí podrías agregar lógica para marcar como "pasado" si necesitas tracking
+  const handlePassDate = async (dateId: string) => {
+    try {
+      await dislikeDate(dateId)
+      console.log('Plan marcado como no interesante')
+    } catch (error) {
+      console.error('Error al marcar como no interesante:', error)
+    }
   }
 
   return {
