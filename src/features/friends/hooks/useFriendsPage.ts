@@ -3,7 +3,7 @@ import { useConnections } from '@/hooks/useConnections'
 
 export function useFriendsPage() {
   const { user } = useAuth()
-  const { connections, pin, loading, error, addConnection, copyPin } = useConnections()
+  const { connections, pin, loading, error, addConnection, removeConnection, copyPin } = useConnections()
 
   return {
     // User data
@@ -19,6 +19,7 @@ export function useFriendsPage() {
     
     // Actions
     addConnection,
+    removeConnection,
     copyPin,
   }
 }

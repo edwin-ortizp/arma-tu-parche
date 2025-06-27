@@ -13,7 +13,7 @@ import { UserPlus } from 'lucide-react'
 import { relationTypes } from '@/constants'
 
 interface AddFriendCardProps {
-  onAddConnection: (pin: string, relation: string) => Promise<void>
+  onAddConnection: (pin: string, relation: string) => Promise<{ success: boolean }>
 }
 
 export function AddFriendCard({ onAddConnection }: AddFriendCardProps) {

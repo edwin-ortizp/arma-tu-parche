@@ -21,6 +21,21 @@ export interface Connection {
   relation?: string
 }
 
+// Nuevo modelo robusto para conexiones
+export interface ConnectionDocument {
+  id: string
+  user1: string
+  user2: string
+  user1Name: string
+  user2Name: string
+  user1Relation: string
+  user2Relation: string
+  status: 'pending' | 'accepted' | 'blocked'
+  createdAt: number
+  updatedAt: number
+  createdBy: string
+}
+
 export interface UserData {
   role: string
   connections: string[]
