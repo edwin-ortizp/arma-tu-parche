@@ -1,14 +1,26 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import './App.css'
-import HomePage from './features/home'
-import FriendsPage from './features/friends'
-import MatchesPage from './features/matches'
-import ProfilePage from './features/profile'
-import ConfigPage from './features/config'
-import LoginPage from './features/auth'
 import BottomNav from './components/BottomNav'
 import { useAuth } from './hooks/useAuth'
 import { Loader2 } from 'lucide-react'
+
+// Lazy load all feature components
+const HomePage = lazy(() => import('./features/home'))
+const FriendsPage = lazy(() => import('./features/friends'))
+const MatchesPage = lazy(() => import('./features/matches'))
+const ProfilePage = lazy(() => import('./features/profile'))
+const ConfigPage = lazy(() => import('./features/config'))
+const LoginPage = lazy(() => import('./features/auth'))
+
+// Loading component for Suspense fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <div className="flex items-center space-x-2">
+      <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
+      <span className="text-muted-foreground">Cargando página...</span>
+    </div>
+  </div>
+)
 
 function App() {
   const [screen, setScreen] = useState('home')
@@ -26,7 +38,11 @@ function App() {
   }
 
   if (!user) {
-    return <LoginPage />
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <LoginPage />
+      </Suspense>
+    )
   }
 
 
@@ -39,9 +55,9 @@ function App() {
           <nav className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">C</span>
+                <span className="text-white font-bold text-lg">A</span>
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">CitApp</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Arma tu Parche</h1>
             </div>
             
             {/* Desktop Navigation */}
@@ -84,11 +100,13 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 pb-32 md:pb-8">
-        {screen === 'home' && <HomePage />}
-        {screen === 'friends' && <FriendsPage />}
-        {screen === 'matches' && <MatchesPage />}
-        {screen === 'profile' && <ProfilePage />}
-        {screen === 'config' && <ConfigPage />}
+        <Suspense fallback={<PageLoader />}>
+          {screen === 'home' && <HomePage />}
+          {screen === 'friends' && <FriendsPage />}
+          {screen === 'matches' && <MatchesPage />}
+          {screen === 'profile' && <ProfilePage />}
+          {screen === 'config' && <ConfigPage />}
+        </Suspense>
       </main>
 
       {/* Mobile Navigation */}

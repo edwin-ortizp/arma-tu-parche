@@ -1,9 +1,22 @@
 import { Sparkles, Users } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import { PageHeader } from '@/components/PageHeader'
 import { EmptyState } from '@/components/EmptyState'
 import { CompanionSelector } from './components/CompanionSelector'
-import { TinderStack } from './components/TinderStack'
 import { useHomePage } from './hooks/useHomePage'
+
+// Lazy load heavy TinderStack component with Framer Motion
+const TinderStack = lazy(() => import('./components/TinderStack').then(module => ({ default: module.TinderStack })))
+
+// Loading component for TinderStack
+const TinderStackLoader = () => (
+  <div className="flex items-center justify-center h-64 bg-gray-50 dark:bg-gray-800 rounded-xl">
+    <div className="flex flex-col items-center space-y-3">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+      <span className="text-sm text-muted-foreground">Cargando planes...</span>
+    </div>
+  </div>
+)
 
 export default function HomePage() {
   const {
@@ -86,11 +99,13 @@ export default function HomePage() {
             <div className="flex flex-col lg:flex-row lg:h-[700px] gap-6">
               {/* Panel izquierdo - Cartas Tinder (50% en desktop) */}
               <div className="flex-1 lg:w-1/2 flex justify-center items-center">
-                <TinderStack
-                  dates={dates}
-                  onLike={handleLikeDate}
-                  onPass={handlePassDate}
-                />
+                <Suspense fallback={<TinderStackLoader />}>
+                  <TinderStack
+                    dates={dates}
+                    onLike={handleLikeDate}
+                    onPass={handlePassDate}
+                  />
+                </Suspense>
               </div>
               
               {/* Panel derecho - Información y herramientas (50% en desktop) */}

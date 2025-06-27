@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CitApp is a mobile-first social matching web application for connecting friends and discovering mutual interests in date/activity plans. Users connect via unique PIN codes and can "like" plans together, creating matches when both parties are interested.
+Arma tu Parche is a mobile-first social matching web application for connecting friends and discovering mutual interests in date/activity plans. Users connect via unique PIN codes and can "like" plans together, creating matches when both parties are interested.
 
 ## Technology Stack
 

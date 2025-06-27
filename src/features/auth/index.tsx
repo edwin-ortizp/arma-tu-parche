@@ -22,7 +22,7 @@ export default function LoginPage() {
             <LogIn className="w-10 h-10 text-white" />
           </div>
           <div className="space-y-3">
-            <h1 className="text-3xl font-bold text-gray-900">Bienvenido a CitApp</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Bienvenido a Arma tu Parche</h1>
             <p className="text-gray-600 text-base leading-relaxed">
               Descubre planes increíbles y conecta con tus amigos para crear momentos especiales juntos.
             </p>

@@ -5,18 +5,6 @@ import { db, auth } from '@/firebase'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
-import {
-  categories as planCategories,
-  relationTypes,
-  experienceTypes,
-} from '@/constants'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Upload, Trash2, Edit, Settings, Save, X } from 'lucide-react'
@@ -47,7 +35,6 @@ export default function ConfigPage() {
   const [view, setView] = useState<'list' | 'create' | 'import'>('list')
   const [plans, setPlans] = useState<DatePlan[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [jsonInput, setJsonInput] = useState('')
 
   useEffect(() => {
     const check = async () => {
@@ -138,27 +125,6 @@ export default function ConfigPage() {
     }
   }
 
-  const handleImport = async () => {
-    try {
-      const plansData = JSON.parse(jsonInput)
-      if (!Array.isArray(plansData)) {
-        alert('El JSON debe ser un array de planes')
-        return
-      }
-      
-      for (const plan of plansData) {
-        await addDoc(collection(db, 'dates'), plan)
-      }
-      
-      alert(`${plansData.length} planes importados exitosamente`)
-      setJsonInput('')
-      setView('list')
-      loadPlans()
-    } catch (err) {
-      console.error(err)
-      alert('Error al importar JSON. Verifica el formato.')
-    }
-  }
 
   if (!allowed) {
     return (

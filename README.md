@@ -1,4 +1,4 @@
-# citapp
+# Arma tu Parche
 
 Aplicación de ejemplo para coordinar planes y citas construida con React, Tailwind y Firebase.
 
