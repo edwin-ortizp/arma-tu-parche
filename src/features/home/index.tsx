@@ -105,7 +105,7 @@ export default function HomePage() {
                   {/* Tags en móvil */}
                   <div className="lg:hidden">
                     {selected && dates.length > 0 && (
-                      <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
+                      <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100 space-y-3">
                         <div className="flex flex-wrap gap-2 justify-center">
                           <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                             {dates[0]?.category}
@@ -130,6 +130,16 @@ export default function HomePage() {
                             </span>
                           )}
                         </div>
+                        {dates[0]?.explanation && (
+                          <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <h5 className="text-xs font-medium text-blue-800 mb-1 flex items-center">
+                              📝 Ideas para hacerlo
+                            </h5>
+                            <p className="text-xs text-blue-700 leading-relaxed">
+                              {dates[0].explanation}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -150,9 +160,19 @@ export default function HomePage() {
                           <h4 className="font-semibold text-lg text-gray-800 mb-2">
                             {dates[0]?.title}
                           </h4>
-                          <p className="text-gray-600 leading-relaxed">
+                          <p className="text-gray-600 leading-relaxed mb-3">
                             {dates[0]?.description}
                           </p>
+                          {dates[0]?.explanation && (
+                            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                              <h5 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
+                                📝 Ideas para hacerlo
+                              </h5>
+                              <p className="text-sm text-blue-700 leading-relaxed">
+                                {dates[0].explanation}
+                              </p>
+                            </div>
+                          )}
                         </div>
                         
                         <div className="flex flex-wrap gap-2">

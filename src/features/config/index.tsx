@@ -27,6 +27,7 @@ import type { DatePlan } from '@/types'
 const initialState = {
   title: '',
   description: '',
+  explanation: '',
   city: '',
   category: '',
   duration: '',
@@ -134,6 +135,7 @@ export default function ConfigPage() {
     setForm({
       title: plan.title,
       description: plan.description,
+      explanation: plan.explanation || '',
       city: plan.city || '',
       category: plan.category,
       relationType: Array.isArray(plan.relationType) ? plan.relationType : (plan.relationType ? [plan.relationType] : []),
@@ -511,6 +513,20 @@ Array.isArray(plan.relationType)
                         <p className="text-xs text-red-500 mt-1">Describe el plan detalladamente</p>
                       )}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        <span className="text-gray-700">Ideas para hacerlo</span>
+                        <span className="text-gray-500 text-xs ml-2">(opcional)</span>
+                      </label>
+                      <Textarea 
+                        name="explanation" 
+                        placeholder="Agrega sugerencias, tips o ideas detalladas sobre cómo realizar este plan..." 
+                        value={form.explanation} 
+                        onChange={handleChange} 
+                        className="min-h-20"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Este campo enriquece la experiencia del usuario con ideas adicionales</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -837,6 +853,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Noche de karaoke",
     "description": "Una noche divertida cantando tus canciones favoritas con amigos",
+    "explanation": "Busca un karaoke con buena selección de canciones en español e inglés. Lleva algunas canciones preparadas y no tengas miedo de desafinar - ¡es parte de la diversión! Considera reservar una cabina privada si prefieren intimidad.",
     "category": "eventos",
     "relationType": ["amigos", "pareja"],
     "experienceType": "cultural",
@@ -852,6 +869,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Caminata en el parque",
     "description": "Una caminata relajante por los senderos del parque nacional",
+    "explanation": "Lleva agua, protector solar y zapatos cómodos. El mejor momento es en la mañana temprano para evitar el calor. Considera descargar una app de identificación de plantas para hacer el recorrido más educativo.",
     "category": "actividades al aire libre",
     "relationType": ["solo", "pareja", "amigos", "familia"],
     "experienceType": "aventura",
@@ -867,6 +885,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Cena romántica",
     "description": "Una cena íntima en un restaurante con vista a la ciudad",
+    "explanation": "Reserva con anticipación, especialmente si es fin de semana. Pide una mesa junto a la ventana para la mejor vista. Considera informar al restaurante si es una ocasión especial para un toque extra de romance.",
     "category": "eventos",
     "relationType": ["pareja"],
     "experienceType": "romántico",
@@ -890,6 +909,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Noche de karaoke",
     "description": "Una noche divertida cantando tus canciones favoritas con amigos",
+    "explanation": "Busca un karaoke con buena selección de canciones en español e inglés. Lleva algunas canciones preparadas y no tengas miedo de desafinar - ¡es parte de la diversión! Considera reservar una cabina privada si prefieren intimidad.",
     "category": "eventos",
     "relationType": ["amigos", "pareja"],
     "experienceType": "cultural",
@@ -905,6 +925,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Caminata en el parque",
     "description": "Una caminata relajante por los senderos del parque nacional",
+    "explanation": "Lleva agua, protector solar y zapatos cómodos. El mejor momento es en la mañana temprano para evitar el calor. Considera descargar una app de identificación de plantas para hacer el recorrido más educativo.",
     "category": "actividades al aire libre",
     "relationType": ["solo", "pareja", "amigos", "familia"],
     "experienceType": "aventura",
@@ -920,6 +941,7 @@ Array.isArray(plan.relationType)
   {
     "title": "Cena romántica",
     "description": "Una cena íntima en un restaurante con vista a la ciudad",
+    "explanation": "Reserva con anticipación, especialmente si es fin de semana. Pide una mesa junto a la ventana para la mejor vista. Considera informar al restaurante si es una ocasión especial para un toque extra de romance.",
     "category": "eventos",
     "relationType": ["pareja"],
     "experienceType": "romántico",

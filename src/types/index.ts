@@ -2,6 +2,7 @@ export interface DatePlan {
   id: string
   title: string
   description: string
+  explanation?: string
   category: string
   duration: string
   cost: string
