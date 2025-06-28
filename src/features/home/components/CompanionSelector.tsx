@@ -56,7 +56,7 @@ export function CompanionSelector({ connections, selected, onSelectionChange, co
   }
 
   return (
-    <Card className="bg-muted/50">
+    <Card className="bg-muted/50 w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">¿Con quién planeas?</CardTitle>
       </CardHeader>

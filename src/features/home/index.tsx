@@ -65,12 +65,26 @@ export default function HomePage() {
         />
       ) : (
         <div className="flex flex-col h-[calc(100vh-120px)]">
+          {/* Selector de compañero arriba - siempre visible cuando logueado */}
+          {isLogged && (
+            <div className="flex-shrink-0 px-4 mb-4">
+              <CompanionSelector 
+                connections={connections}
+                selected={selected}
+                onSelectionChange={setSelected}
+                compact={selected !== ''}
+              />
+            </div>
+          )}
+
           {isLogged && selected === '' ? (
-            <EmptyState
-              icon={<span className="text-2xl">👆</span>}
-              title="¿Con quién planeas?"
-              description="Elige un compañero o selecciona 'Solo' para planes individuales."
-            />
+            <div className="px-4">
+              <EmptyState
+                icon={<span className="text-2xl">👆</span>}
+                title="¿Con quién planeas?"
+                description="Elige un compañero o selecciona 'Solo' para planes individuales."
+              />
+            </div>
           ) : (
             /* Layout responsivo - móvil: columna, desktop: 2 columnas */
             <div className="flex flex-col lg:flex-row lg:gap-8 h-full">
@@ -78,7 +92,7 @@ export default function HomePage() {
               <div className="flex-1 flex justify-center items-center px-2 lg:px-0">
                 <div className="w-[95vw] lg:w-full lg:max-w-[500px] space-y-4">
                   {/* Tarjeta principal con contador integrado */}
-                  <div className="h-[calc(100vh-220px)] lg:h-[600px] relative">
+                  <div className="h-[calc(100vh-300px)] lg:h-[600px] relative">
                     <Suspense fallback={<TinderStackLoader />}>
                       <TinderStack
                         dates={dates}
@@ -198,18 +212,6 @@ export default function HomePage() {
                   </>
                 )}
               </div>
-            </div>
-          )}
-          
-          {/* Selector de compañero abajo - siempre visible cuando logueado */}
-          {isLogged && (
-            <div className="flex-shrink-0 px-4 pb-2">
-              <CompanionSelector 
-                connections={connections}
-                selected={selected}
-                onSelectionChange={setSelected}
-                compact={selected !== ''}
-              />
             </div>
           )}
         </div>
