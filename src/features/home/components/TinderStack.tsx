@@ -10,9 +10,11 @@ interface TinderStackProps {
   dates: DatePlan[]
   onLike: (dateId: string) => Promise<{ hasMatch: boolean; isNewMatch: boolean }>
   onPass: (dateId: string) => Promise<void>
+  currentIndex?: number
+  totalCount?: number
 }
 
-export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
+export function TinderStack({ dates, onLike, onPass, totalCount }: TinderStackProps) {
   const [currentDates, setCurrentDates] = useState(dates)
   const [isLiking, setIsLiking] = useState(false)
   const [showMatchAnimation, setShowMatchAnimation] = useState(false)
@@ -85,6 +87,8 @@ export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
             onSwipe={handleSwipe}
             isTop={index === 0}
             zIndex={visibleCards.length - index}
+            currentIndex={dates.length - currentDates.length + 1}
+            totalCount={totalCount || dates.length}
           />
         ))}
       </AnimatePresence>
@@ -116,12 +120,6 @@ export function TinderStack({ dates, onLike, onPass }: TinderStackProps) {
         </div>
       )}
       
-      {/* Instructions */}
-      <div className="absolute bottom-[-80px] left-1/2 transform -translate-x-1/2 text-center">
-        <p className="text-sm text-muted-foreground">
-          Desliza → para me gusta, ← para pasar
-        </p>
-      </div>
     </div>
   )
 }

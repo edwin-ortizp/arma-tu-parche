@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, PanInfo, useAnimation } from 'framer-motion'
-import { Heart, X, MapPin, Clock, DollarSign } from 'lucide-react'
+import { Heart, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,9 +11,11 @@ interface TinderCardProps {
   onSwipe: (direction: 'left' | 'right', dateId: string) => void
   isTop: boolean
   zIndex: number
+  currentIndex?: number
+  totalCount?: number
 }
 
-export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
+export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCount }: TinderCardProps) {
   const [exitX, setExitX] = useState(0)
   const [rotation, setRotation] = useState(0)
   const controls = useAnimation()
@@ -62,9 +64,20 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
         rotate: rotation,
       }}
     >
-      <Card className="w-full h-full overflow-hidden bg-white shadow-2xl border-0">
-        {/* Imagen de fondo reducida */}
-        <div className="relative h-2/5 bg-gray-200 overflow-hidden">
+      <Card className="w-full h-full overflow-hidden bg-white shadow-2xl border-0 relative">
+        {/* Contador en la esquina superior derecha - solo en tarjeta activa */}
+        {isTop && currentIndex && totalCount && (
+          <div className="absolute top-4 right-4 z-50">
+            <div className="bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+              <span className="text-xs font-semibold text-white">
+                {currentIndex} / {totalCount}
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Imagen de fondo - 40% de la tarjeta ocupando todo el ancho */}
+        <div className="relative h-2/5 bg-gray-200 overflow-hidden rounded-t-xl">
           {/* Detectar si es una URL de imagen o un emoji */}
           {date.image.startsWith('http') || date.image.startsWith('/') ? (
             <img 
@@ -93,15 +106,15 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
           ) : (
             /* Si no es URL, mostrar como emoji con gradiente de fondo */
             <div 
-              className={`w-full h-full bg-gradient-to-br ${date.bgGradient || 'from-blue-400 to-cyan-500'} flex items-center justify-center`}
+              className={`w-full h-full bg-gradient-to-br ${date.bgGradient || 'from-blue-400 to-cyan-500'} flex flex-col items-center justify-center p-6`}
             >
               <div className="text-white text-center">
-                <div className="text-5xl mb-2 drop-shadow-lg filter">
+                <div className="text-6xl drop-shadow-lg filter mb-4">
                   {date.image}
                 </div>
-                <div className="text-sm font-semibold bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  {date.category}
-                </div>
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg">
+                  {date.title}
+                </h2>
               </div>
             </div>
           )}
@@ -130,10 +143,10 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
             )}
           </motion.div>
 
-          {/* Badge de categoría - solo para imágenes reales */}
+          {/* Badge de categoría - para imágenes reales */}
           {(date.image.startsWith('http') || date.image.startsWith('/')) && (
             <div className="absolute top-4 left-4">
-              <Badge className="bg-white/90 text-gray-800 font-medium">
+              <Badge className="bg-black/70 text-white font-medium backdrop-blur-sm">
                 {date.category}
               </Badge>
             </div>
@@ -149,63 +162,42 @@ export function TinderCard({ date, onSwipe, isTop, zIndex }: TinderCardProps) {
           )}
         </div>
 
-        {/* Contenido inferior ampliado */}
-        <div className="h-3/5 p-6 flex flex-col justify-between">
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-              {date.title}
-            </h3>
-            <p className="text-gray-600 text-base line-clamp-4 mb-4 leading-relaxed">
+        {/* Contenido inferior con descripción */}
+        <div className="h-3/5 bg-white flex flex-col">
+          {/* Descripción del plan */}
+          <div className="flex-1 flex items-center justify-center p-6">
+            <p className="text-lg text-gray-700 text-center line-clamp-4 leading-relaxed">
               {date.description}
             </p>
           </div>
-
-          {/* Información adicional */}
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
-            <div className="flex items-center text-sm text-gray-600">
-              <Clock className="w-4 h-4 mr-2 text-blue-500" />
-              <span className="font-medium">{date.duration}</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-              <span className="font-medium">{date.cost}</span>
-            </div>
-            {date.city && (
-              <div className="flex items-center text-sm text-gray-600 col-span-2">
-                <MapPin className="w-4 h-4 mr-2 text-red-500" />
-                <span className="font-medium">{date.city}</span>
+          
+          {/* Footer con botones integrados - solo visible en la carta superior */}
+          {isTop && (
+            <div className="border-t border-gray-100 p-4 bg-gray-50/50">
+              <div className="flex justify-center space-x-8">
+                {/* Botón de dislike */}
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-20 h-20 rounded-full border-4 border-red-300 bg-white hover:bg-red-50 group shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  onClick={() => handleButtonClick('left')}
+                >
+                  <X className="w-12 h-12 text-red-500 group-hover:scale-110 transition-transform" />
+                </Button>
+                
+                {/* Botón de like */}
+                <Button
+                  size="lg"
+                  className="w-20 h-20 rounded-full bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 group shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  onClick={() => handleButtonClick('right')}
+                >
+                  <Heart className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+                </Button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Botones de acción - posicionados en los lados para no tapar información */}
-        {isTop && (
-          <>
-            {/* Botón de dislike - lado izquierdo */}
-            <div className="absolute bottom-6 left-6">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-16 h-16 rounded-full border-3 border-red-500 bg-white hover:bg-red-50 group shadow-lg hover:shadow-xl transition-all"
-                onClick={() => handleButtonClick('left')}
-              >
-                <X className="w-8 h-8 text-red-500 group-hover:scale-125 transition-transform" />
-              </Button>
-            </div>
-            
-            {/* Botón de like - lado derecho */}
-            <div className="absolute bottom-6 right-6">
-              <Button
-                size="lg"
-                className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 group shadow-lg hover:shadow-xl transition-all"
-                onClick={() => handleButtonClick('right')}
-              >
-                <Heart className="w-8 h-8 text-white group-hover:scale-125 transition-transform" />
-              </Button>
-            </div>
-          </>
-        )}
       </Card>
     </motion.div>
   )

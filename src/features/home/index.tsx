@@ -1,4 +1,4 @@
-import { Sparkles, Users } from 'lucide-react'
+import { Sparkles, Users, Clock, DollarSign, MapPin } from 'lucide-react'
 import { lazy, Suspense } from 'react'
 import { PageHeader } from '@/components/PageHeader'
 import { EmptyState } from '@/components/EmptyState'
@@ -65,50 +65,164 @@ export default function HomePage() {
         />
       ) : (
         <div className="flex flex-col h-[calc(100vh-120px)]">
-          {isLogged && connections.length > 0 && selected === '' ? (
+          {isLogged && selected === '' ? (
             <EmptyState
               icon={<span className="text-2xl">👆</span>}
               title="¿Con quién planeas?"
               description="Elige un compañero o selecciona 'Solo' para planes individuales."
             />
           ) : (
-            /* Layout optimizado con tarjeta protagonista */
-            <>
-              {/* Contador en la esquina superior derecha */}
-              {selected && (
-                <div className="absolute top-4 right-4 z-50">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg border">
-                    <span className="text-xs font-medium text-gray-700">{dates.length} planes</span>
+            /* Layout responsivo - móvil: columna, desktop: 2 columnas */
+            <div className="flex flex-col lg:flex-row lg:gap-8 h-full">
+              {/* Columna izquierda - Tarjeta principal */}
+              <div className="flex-1 flex justify-center items-center px-2 lg:px-0">
+                <div className="w-[95vw] lg:w-full lg:max-w-[500px] space-y-4">
+                  {/* Tarjeta principal con contador integrado */}
+                  <div className="h-[calc(100vh-220px)] lg:h-[600px] relative">
+                    <Suspense fallback={<TinderStackLoader />}>
+                      <TinderStack
+                        dates={dates}
+                        onLike={handleLikeDate}
+                        onPass={handlePassDate}
+                      />
+                    </Suspense>
                   </div>
-                </div>
-              )}
-              
-              {/* Cartas Tinder ocupando la mayoría de la pantalla */}
-              <div className="flex-1 flex justify-center items-center px-2">
-                <div className="w-full max-w-[95vw] sm:max-w-sm h-full max-h-[calc(100vh-200px)]">
-                  <Suspense fallback={<TinderStackLoader />}>
-                    <TinderStack
-                      dates={dates}
-                      onLike={handleLikeDate}
-                      onPass={handlePassDate}
-                    />
-                  </Suspense>
+                  
+                  {/* Tags en móvil */}
+                  <div className="lg:hidden">
+                    {selected && dates.length > 0 && (
+                      <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            {dates[0]?.category}
+                          </span>
+                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {dates[0]?.duration}
+                          </span>
+                          <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <DollarSign className="w-3 h-3 mr-1" />
+                            {dates[0]?.cost}
+                          </span>
+                          {dates[0]?.city && (
+                            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {dates[0]?.city}
+                            </span>
+                          )}
+                          {dates[0]?.experienceType && (
+                            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                              {dates[0]?.experienceType}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
-              {/* Selector de compañero abajo */}
-              {isLogged && connections.length > 0 && (
-                <div className="flex-shrink-0 px-4 pb-2">
-                  <CompanionSelector 
-                    connections={connections}
-                    selected={selected}
-                    onSelectionChange={setSelected}
-                    compact={selected !== ''}
-                  />
-                </div>
-              )}
-            </>
+              {/* Columna derecha - Solo visible en desktop */}
+              <div className="hidden lg:block lg:w-80 lg:flex-shrink-0 space-y-6">
+                {selected && dates.length > 0 && (
+                  <>
+                    {/* Información del plan actual */}
+                    <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                      <h3 className="text-xl font-bold mb-4 text-gray-900">
+                        Detalles del Plan
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-lg text-gray-800 mb-2">
+                            {dates[0]?.title}
+                          </h4>
+                          <p className="text-gray-600 leading-relaxed">
+                            {dates[0]?.description}
+                          </p>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            {dates[0]?.category}
+                          </span>
+                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {dates[0]?.duration}
+                          </span>
+                          <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <DollarSign className="w-3 h-3 mr-1" />
+                            {dates[0]?.cost}
+                          </span>
+                          {dates[0]?.city && (
+                            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {dates[0]?.city}
+                            </span>
+                          )}
+                          {dates[0]?.experienceType && (
+                            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                              {dates[0]?.experienceType}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Instrucciones */}
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                      <h3 className="text-lg font-bold mb-4 text-gray-900">
+                        💡 Cómo usar
+                      </h3>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-bold">→</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">Me Gusta</p>
+                            <p className="text-gray-600">Desliza derecha o usa el botón ❤️</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <span className="text-red-600 font-bold">←</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">Pasar</p>
+                            <p className="text-gray-600">Desliza izquierda o usa el botón ✗</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           )}
+          
+          {/* Selector de compañero abajo - siempre visible cuando logueado */}
+          {isLogged && (
+            <div className="flex-shrink-0 px-4 pb-2">
+              <CompanionSelector 
+                connections={connections}
+                selected={selected}
+                onSelectionChange={setSelected}
+                compact={selected !== ''}
+              />
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Instrucciones al final - solo móvil */}
+      {isLogged && selected && (
+        <div className="lg:hidden mt-8 px-6 pb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+            <p className="text-center text-sm text-gray-600">
+              💡 <strong>Tip:</strong> Desliza → para me gusta, ← para pasar
+            </p>
+          </div>
         </div>
       )}
     </div>

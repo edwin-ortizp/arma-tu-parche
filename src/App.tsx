@@ -1,8 +1,10 @@
-import { useState, lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import './App.css'
 import BottomNav from './components/BottomNav'
 import { useAuth } from './hooks/useAuth'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowLeft } from 'lucide-react'
+import { Button } from './components/ui/button'
 
 // Lazy load all feature components
 const HomePage = lazy(() => import('./features/home'))
@@ -23,8 +25,21 @@ const PageLoader = () => (
 )
 
 function App() {
-  const [screen, setScreen] = useState('home')
+  const navigate = useNavigate()
+  const location = useLocation()
   const { user, userData, loading } = useAuth()
+  
+  const handleScreenChange = (newScreen: string) => {
+    navigate(`/${newScreen === 'home' ? '' : newScreen}`)
+  }
+  
+  const currentPath = location.pathname
+  const getCurrentScreen = () => {
+    if (currentPath === '/') return 'home'
+    return currentPath.slice(1) // Remove leading slash
+  }
+  
+  const canGoBack = currentPath !== '/' && currentPath !== '/home'
 
   if (loading) {
     return (
@@ -60,6 +75,19 @@ function App() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Arma tu Parche</h1>
             </div>
             
+            {/* Back button */}
+            {canGoBack && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="mr-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+            )}
+            
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-2">
               {[
@@ -71,9 +99,9 @@ function App() {
               ].map(({ key, label }) => (
                 <button
                   key={key}
-                  onClick={() => setScreen(key)}
+                  onClick={() => handleScreenChange(key)}
                   className={`px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 ${
-                    screen === key 
+                    getCurrentScreen() === key 
                       ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg' 
                       : 'text-gray-700 hover:text-gray-900 hover:bg-white/30 backdrop-blur-sm'
                   }`}
@@ -101,17 +129,19 @@ function App() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 pb-32 md:pb-8">
         <Suspense fallback={<PageLoader />}>
-          {screen === 'home' && <HomePage />}
-          {screen === 'friends' && <FriendsPage />}
-          {screen === 'matches' && <MatchesPage />}
-          {screen === 'profile' && <ProfilePage />}
-          {screen === 'config' && <ConfigPage />}
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/friends" element={<FriendsPage />} />
+            <Route path="/matches" element={<MatchesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/config" element={<ConfigPage />} />
+          </Routes>
         </Suspense>
       </main>
 
       {/* Mobile Navigation */}
       <div className="md:hidden">
-        <BottomNav current={screen} onChange={setScreen} isAdmin={userData?.role === 'admin'} />
+        <BottomNav current={getCurrentScreen()} onChange={handleScreenChange} isAdmin={userData?.role === 'admin'} />
       </div>
     </div>
   )

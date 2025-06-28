@@ -46,7 +46,10 @@ export function useDates(isLogged: boolean = false) {
         filteredDates = filteredDates.filter(d => !interactedDateIds.includes(d.id))
       }
       
-      setDates(filteredDates)
+      // Aleatorizar el orden de los planes
+      const shuffledDates = filteredDates.sort(() => Math.random() - 0.5)
+      
+      setDates(shuffledDates)
     } catch (err) {
       console.error('Error al cargar planes:', err)
       setError('Error al cargar planes')
