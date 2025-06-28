@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion, PanInfo, useAnimation } from 'framer-motion'
-import { Heart, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Heart, X } from 'lucide-react'
 import type { DatePlan } from '@/types'
 
 interface TinderCardProps {
@@ -42,10 +42,6 @@ export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCo
     setRotation(newRotation)
   }
 
-  const handleButtonClick = (direction: 'left' | 'right') => {
-    setExitX(direction === 'right' ? 1000 : -1000)
-    onSwipe(direction, date.id)
-  }
 
   return (
     <motion.div
@@ -56,7 +52,10 @@ export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCo
       onDragEnd={handleDragEnd}
       onDrag={handleDrag}
       animate={controls}
-      initial={{ scale: 1 - (3 - zIndex) * 0.05, y: (3 - zIndex) * 10 }}
+      initial={{ 
+        scale: 1 - (3 - zIndex) * 0.03, 
+        y: (3 - zIndex) * 5
+      }}
       exit={{ x: exitX, rotate: exitX > 0 ? 30 : -30, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       whileDrag={{ 
@@ -67,9 +66,9 @@ export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCo
       <Card className="w-full h-full overflow-hidden bg-white shadow-2xl border-0 relative">
         {/* Contador en la esquina superior derecha - solo en tarjeta activa */}
         {isTop && currentIndex && totalCount && (
-          <div className="absolute top-4 right-4 z-50">
-            <div className="bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-              <span className="text-xs font-semibold text-white">
+          <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-50">
+            <div className="bg-black/70 backdrop-blur-sm rounded-lg sm:rounded-xl px-2 sm:px-4 py-1 sm:py-2 shadow-xl border border-white/20">
+              <span className="text-xs sm:text-sm font-semibold text-white">
                 {currentIndex} / {totalCount}
               </span>
             </div>
@@ -145,17 +144,21 @@ export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCo
 
           {/* Badge de categoría - para imágenes reales */}
           {(date.image.startsWith('http') || date.image.startsWith('/')) && (
-            <div className="absolute top-4 left-4">
-              <Badge className="bg-black/70 text-white font-medium backdrop-blur-sm">
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
+              <Badge className="bg-black/70 text-white font-semibold backdrop-blur-sm border-white/30 rounded-lg sm:rounded-xl px-2 sm:px-4 py-1 sm:py-2 shadow-xl text-xs sm:text-sm">
                 {date.category}
               </Badge>
             </div>
           )}
 
-          {/* Badge "Good for today" */}
+          {/* Badge "Good for today" - reposicionado para evitar overlap */}
           {date.goodForToday && (
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-green-500 text-white font-medium shadow-lg">
+            <div className={`absolute z-40 ${
+              isTop && currentIndex && totalCount 
+                ? 'top-12 sm:top-16 right-2 sm:right-4' 
+                : 'top-2 sm:top-4 right-2 sm:right-4'
+            }`}>
+              <Badge className="bg-green-500 text-white font-semibold shadow-xl hover:bg-green-600 border border-green-400 rounded-lg sm:rounded-xl px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm">
                 ¡Perfecto para hoy!
               </Badge>
             </div>
@@ -164,34 +167,58 @@ export function TinderCard({ date, onSwipe, isTop, zIndex, currentIndex, totalCo
 
         {/* Contenido inferior con descripción */}
         <div className="h-3/5 bg-white flex flex-col">
-          {/* Descripción del plan */}
-          <div className="flex-1 flex items-center justify-center p-6">
-            <p className="text-lg text-gray-700 text-center line-clamp-4 leading-relaxed">
+          {/* Título y descripción del plan */}
+          <div className="flex-1 flex flex-col justify-center space-y-3 sm:space-y-4 p-4 sm:p-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 text-center line-clamp-2">
+              {date.title}
+            </h3>
+            <p className="text-base sm:text-lg text-gray-700 text-center line-clamp-2 sm:line-clamp-3 leading-relaxed">
               {date.description}
             </p>
+            {date.explanation && (
+              <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-xs sm:text-sm text-blue-700 text-center line-clamp-2 leading-relaxed">
+                  💡 {date.explanation}
+                </p>
+              </div>
+            )}
+            {/* Información adicional compacta */}
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+              <span className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                ⏱️ {date.duration}
+              </span>
+              <span className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                💰 {date.cost}
+              </span>
+              {date.city && (
+                <span className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                  📍 {date.city}
+                </span>
+              )}
+            </div>
           </div>
           
-          {/* Footer con botones integrados - solo visible en la carta superior */}
+          {/* Footer con botones - solo visible en la tarjeta superior */}
           {isTop && (
-            <div className="border-t border-gray-100 p-4 bg-gray-50/50">
-              <div className="flex justify-center space-x-8">
+            <div className="border-t border-gray-200 bg-white p-4 flex justify-center rounded-b-xl shadow-sm">
+              <div className="flex space-x-6">
                 {/* Botón de dislike */}
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-20 h-20 rounded-full border-4 border-red-300 bg-white hover:bg-red-50 group shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                  onClick={() => handleButtonClick('left')}
+                  className="w-16 h-16 rounded-full border-2 border-red-300 bg-white hover:bg-red-50 group shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+                  onClick={() => onSwipe('left', date.id)}
                 >
-                  <X className="w-12 h-12 text-red-500 group-hover:scale-110 transition-transform" />
+                  <X className="w-7 h-7 text-red-500 group-hover:scale-110 transition-transform" />
                 </Button>
                 
                 {/* Botón de like */}
                 <Button
                   size="lg"
-                  className="w-20 h-20 rounded-full bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 group shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                  onClick={() => handleButtonClick('right')}
+                  className="w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 group shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+                  onClick={() => onSwipe('right', date.id)}
                 >
-                  <Heart className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+                  <Heart className="w-7 h-7 text-white group-hover:scale-110 transition-transform" />
                 </Button>
               </div>
             </div>

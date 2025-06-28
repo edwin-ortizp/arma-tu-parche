@@ -129,7 +129,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 pb-32 md:pb-8">
+      <main className="max-w-7xl mx-auto px-6 py-4 pb-32 md:pb-8">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />

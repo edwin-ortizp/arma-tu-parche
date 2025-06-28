@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { TinderCard } from './TinderCard'
 import { EmptyState } from '@/components/EmptyState'
-import { RefreshCw, Heart } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { DatePlan } from '@/types'
 
@@ -55,9 +55,9 @@ export function TinderStack({ dates, onLike, onPass, totalCount }: TinderStackPr
 
   if (currentDates.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[600px] space-y-6">
+      <div className="flex flex-col items-center justify-center h-[80vh] max-h-[600px] min-h-[400px] space-y-6">
         <EmptyState
-          icon={<Heart className="w-12 h-12 text-pink-500" />}
+          icon={<span className="text-4xl">💕</span>}
           title="¡Has visto todos los planes!"
           description="No hay más planes disponibles por ahora. Vuelve más tarde para descubrir nuevas actividades."
         />
@@ -78,7 +78,9 @@ export function TinderStack({ dates, onLike, onPass, totalCount }: TinderStackPr
   const visibleCards = currentDates.slice(0, 3)
 
   return (
-    <div className="relative mx-auto w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-[600px] md:h-[700px] flex items-center justify-center">
+    <div className="relative mx-auto w-full flex flex-col items-center">
+      {/* Card Stack Container */}
+      <div className="relative w-full h-[80vh] max-h-[600px] min-h-[400px] flex items-center justify-center mb-6">
       <AnimatePresence>
         {visibleCards.map((date, index) => (
           <TinderCard
@@ -119,6 +121,7 @@ export function TinderStack({ dates, onLike, onPass, totalCount }: TinderStackPr
           </div>
         </div>
       )}
+      </div>
       
     </div>
   )

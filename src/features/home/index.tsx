@@ -43,18 +43,28 @@ export default function HomePage() {
 
   return (
     <div className={`pb-20 ${selected ? 'space-y-2' : 'space-y-6'}`}>
-      {/* Header dinámico basado en si hay compañero seleccionado */}
-      {!isLogged || connections.length === 0 || selected === '' ? (
-        <PageHeader
-          title="Encuentra tu Plan"
-          description="Descubre actividades perfectas para compartir"
-          icon={<Sparkles className="w-5 h-5 text-white" />}
-          badge={{
-            text: `${dates.length} planes disponibles`,
-            className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
-          }}
-        />
-      ) : null}
+      {/* Header principal - siempre visible */}
+      <PageHeader
+        title="Arma tu Plan"
+        description="Descubre actividades perfectas para compartir"
+        icon={<Sparkles className="w-5 h-5 text-white" />}
+        badge={{
+          text: `${dates.length} planes disponibles`,
+          className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+        }}
+      />
+
+      {/* Selector de compañero - siempre visible si está logueado y tiene conexiones */}
+      {isLogged && connections.length > 0 && (
+        <div className="px-4">
+          <CompanionSelector 
+            connections={connections}
+            selected={selected}
+            onSelectionChange={setSelected}
+            compact={false}
+          />
+        </div>
+      )}
 
       {isLogged && connections.length === 0 ? (
         <EmptyState
@@ -64,19 +74,7 @@ export default function HomePage() {
           tip="Ve a la sección Amigos para conectarte"
         />
       ) : (
-        <div className="flex flex-col h-[calc(100vh-120px)]">
-          {/* Selector de compañero arriba - siempre visible cuando logueado */}
-          {isLogged && (
-            <div className="flex-shrink-0 px-4 mb-4">
-              <CompanionSelector 
-                connections={connections}
-                selected={selected}
-                onSelectionChange={setSelected}
-                compact={selected !== ''}
-              />
-            </div>
-          )}
-
+        <div className="flex flex-col min-h-screen pb-24 md:pb-8">
           {isLogged && selected === '' ? (
             <div className="px-4">
               <EmptyState
@@ -89,10 +87,10 @@ export default function HomePage() {
             /* Layout responsivo - móvil: columna, desktop: 2 columnas */
             <div className="flex flex-col lg:flex-row lg:gap-8 h-full">
               {/* Columna izquierda - Tarjeta principal */}
-              <div className="flex-1 flex justify-center items-center px-2 lg:px-0">
-                <div className="w-[95vw] lg:w-full lg:max-w-[500px] space-y-4">
+              <div className="flex-1 flex flex-col justify-center items-center">
+                <div className="w-full max-w-md sm:max-w-lg lg:max-w-[680px] px-2 sm:px-0">
                   {/* Tarjeta principal con contador integrado */}
-                  <div className="h-[calc(100vh-300px)] lg:h-[600px] relative">
+                  <div className="relative">
                     <Suspense fallback={<TinderStackLoader />}>
                       <TinderStack
                         dates={dates}
@@ -147,7 +145,7 @@ export default function HomePage() {
               </div>
               
               {/* Columna derecha - Solo visible en desktop */}
-              <div className="hidden lg:block lg:w-80 lg:flex-shrink-0 space-y-6">
+              <div className="hidden lg:block lg:w-96 lg:flex-shrink-0 space-y-6">
                 {selected && dates.length > 0 && (
                   <>
                     {/* Información del plan actual */}
@@ -239,10 +237,10 @@ export default function HomePage() {
       
       {/* Instrucciones al final - solo móvil */}
       {isLogged && selected && (
-        <div className="lg:hidden mt-8 px-6 pb-4">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+        <div className="lg:hidden mt-4 px-6 pb-safe">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
             <p className="text-center text-sm text-gray-600">
-              💡 <strong>Tip:</strong> Desliza → para me gusta, ← para pasar
+              💡 <strong>Tip:</strong> Usa los botones ❤️ y ❌ para calificar
             </p>
           </div>
         </div>
