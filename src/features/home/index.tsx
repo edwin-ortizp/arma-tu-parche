@@ -82,7 +82,7 @@ export default function HomePage() {
               <EmptyState
                 icon={<span className="text-2xl">👆</span>}
                 title="¿Con quién planeas?"
-                description="Elige un compañero o selecciona 'Solo' para planes individuales."
+                description="Elige un compañero o selecciona 'Para mí' para planes individuales."
               />
             </div>
           ) : (

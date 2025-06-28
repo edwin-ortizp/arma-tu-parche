@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import { useAuth } from './hooks/useAuth'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import { Button } from './components/ui/button'
+import { ToastProvider } from './hooks/useToast'
 
 // Lazy load all feature components
 const HomePage = lazy(() => import('./features/home'))
@@ -63,7 +64,8 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
+    <ToastProvider>
+      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
       {/* Header/Navigation Bar */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -144,6 +146,7 @@ function App() {
         <BottomNav current={getCurrentScreen()} onChange={handleScreenChange} isAdmin={userData?.role === 'admin'} />
       </div>
     </div>
+    </ToastProvider>
   )
 }
 

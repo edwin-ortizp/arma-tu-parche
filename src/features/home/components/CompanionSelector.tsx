@@ -11,14 +11,14 @@ interface CompanionSelectorProps {
 }
 
 export function CompanionSelector({ connections, selected, onSelectionChange, compact = false }: CompanionSelectorProps) {
-  // Crear conexión especial para "Solo"
+  // Crear conexión especial para "Para mí"
   const soloConnection = {
     uid: 'solo',
-    name: 'Solo',
+    name: 'Para mí',
     relation: 'solo'
   } as Connection
   
-  // Agregar "Solo" a las opciones
+  // Agregar "Para mí" a las opciones
   const allConnections = [soloConnection, ...connections]
 
   // Modo compacto: solo muestra el compañero seleccionado y un botón para cambiar
