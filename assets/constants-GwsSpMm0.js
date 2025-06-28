@@ -1,0 +1,1 @@
+const a=["eventos","museos","actividades al aire libre"],e=["solo","pareja","amigos","familia"],s=["pareja","amigos","familia"],o=["romántico","cultural","aventura","gastronómico"];export{a,s as c,o as e,e as r};
