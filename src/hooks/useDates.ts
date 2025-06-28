@@ -3,7 +3,7 @@ import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import type { DatePlan } from '@/types'
 
-export function useDates(isLogged: boolean = false) {
+export function useDates(isLogged: boolean = false, selectedCompanion: string = '') {
   const [dates, setDates] = useState<DatePlan[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,27 +23,38 @@ export function useDates(isLogged: boolean = false) {
         return isActive && isAllowed
       })
 
-      // Si el usuario está logueado, filtrar planes ya interactuados
-      if (isLogged && auth.currentUser) {
+      // Si el usuario está logueado y hay compañero seleccionado, filtrar planes ya interactuados con ese compañero específico
+      if (isLogged && auth.currentUser && selectedCompanion) {
         const userId = auth.currentUser.uid
+        const companionId = selectedCompanion === 'solo' ? userId : selectedCompanion
         
-        // Obtener todos los likes/dislikes del usuario
+        // Obtener likes/dislikes específicos para esta combinación usuario-compañero
         const likesSnap = await getDocs(collection(db, 'likes'))
-        const userLikes = likesSnap.docs
+        const userCompanionLikes = likesSnap.docs
           .map(d => d.data())
-          .filter(like => like.userId === userId)
+          .filter(like => {
+            // Verificar interacciones para esta combinación específica
+            const isUserLike = like.userId === userId
+            const isCompanionContext = like.companionId === companionId || 
+                                     (!like.companionId && selectedCompanion === 'solo') // Backward compatibility
+            return isUserLike && isCompanionContext
+          })
           .map(like => like.dateId)
 
-        // Obtener todos los matches del usuario
+        // Obtener matches específicos para esta combinación usuario-compañero
         const matchesSnap = await getDocs(collection(db, 'matches'))
-        const userMatches = matchesSnap.docs
+        const userCompanionMatches = matchesSnap.docs
           .map(d => d.data())
-          .filter(match => match.users.includes(userId))
+          .filter(match => {
+            const hasUser = match.users.includes(userId)
+            const hasCompanion = match.users.includes(companionId)
+            return hasUser && hasCompanion
+          })
           .map(match => match.dateId)
 
-        // Filtrar planes que ya fueron liked/disliked o que ya tienen match
-        const interactedDateIds = [...new Set([...userLikes, ...userMatches])]
-        filteredDates = filteredDates.filter(d => !interactedDateIds.includes(d.id))
+        // Filtrar solo planes que ya fueron interactuados con este compañero específico
+        const interactedWithCompanionIds = [...new Set([...userCompanionLikes, ...userCompanionMatches])]
+        filteredDates = filteredDates.filter(d => !interactedWithCompanionIds.includes(d.id))
       }
       
       // Aleatorizar el orden de los planes
@@ -60,7 +71,7 @@ export function useDates(isLogged: boolean = false) {
 
   useEffect(() => {
     loadDates()
-  }, [isLogged])
+  }, [isLogged, selectedCompanion])
 
   const likeDate = async (dateId: string, selectedUserId: string) => {
     const user = auth.currentUser
@@ -69,25 +80,32 @@ export function useDates(isLogged: boolean = false) {
     }
     
     try {
-      // Crear el like del usuario actual con un ID más específico
-      const userLikeId = `${user.uid}_${dateId}`
+      // Crear el like del usuario actual con contexto de compañero
+      const companionId = selectedUserId === 'solo' ? user.uid : selectedUserId
+      const userLikeId = `${user.uid}_${companionId}_${dateId}`
       const userLikeRef = doc(db, 'likes', userLikeId)
       
       await setDoc(userLikeRef, {
         userId: user.uid,
         dateId,
+        companionId,
         liked: true,
         createdAt: Date.now(),
       }, { merge: true }) // Usar merge para evitar conflictos
 
-      // Intentar verificar si el otro usuario ya dio like
+      // Si es "solo", no hay match posible
+      if (selectedUserId === 'solo' || selectedUserId === user.uid) {
+        return { hasMatch: false, isNewMatch: false }
+      }
+
+      // Intentar verificar si el otro usuario ya dio like para este mismo contexto
       try {
-        const otherLikeId = `${selectedUserId}_${dateId}`
+        const otherLikeId = `${selectedUserId}_${user.uid}_${dateId}`
         const otherLikeRef = doc(db, 'likes', otherLikeId)
         const otherLikeSnap = await getDoc(otherLikeRef)
         
-        if (otherLikeSnap.exists()) {
-          // Hay match! Intentar crear documento de match
+        if (otherLikeSnap.exists() && otherLikeSnap.data()?.liked === true) {
+          // Hay match! Intentar crear documento de match con contexto de compañeros
           const matchId = `${[user.uid, selectedUserId].sort().join('_')}_${dateId}`
           const matchRef = doc(db, 'matches', matchId)
           
@@ -128,20 +146,22 @@ export function useDates(isLogged: boolean = false) {
     }
   }
 
-  const dislikeDate = async (dateId: string) => {
+  const dislikeDate = async (dateId: string, companionId: string = '') => {
     const user = auth.currentUser
     if (!user) {
       throw new Error('Usuario no autenticado')
     }
     
     try {
-      // Crear el dislike del usuario actual
-      const userDislikeId = `${user.uid}_${dateId}`
+      // Crear el dislike del usuario actual con contexto de compañero
+      const contextCompanionId = companionId === 'solo' ? user.uid : companionId
+      const userDislikeId = `${user.uid}_${contextCompanionId}_${dateId}`
       const userDislikeRef = doc(db, 'likes', userDislikeId)
       
       await setDoc(userDislikeRef, {
         userId: user.uid,
         dateId,
+        companionId: contextCompanionId,
         liked: false, // false indica dislike
         createdAt: Date.now(),
       }, { merge: true })

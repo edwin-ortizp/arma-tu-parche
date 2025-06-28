@@ -9,7 +9,7 @@ export function useHomePage() {
   
   const { user } = useAuth()
   const isLogged = !!user
-  const { dates, loading: datesLoading, likeDate, dislikeDate, refreshDates } = useDates(isLogged)
+  const { dates, loading: datesLoading, likeDate, dislikeDate, refreshDates } = useDates(isLogged, selected)
   const { connections, loading: connectionsLoading } = useConnections()
 
   const handleLikeDate = async (dateId: string) => {
@@ -41,9 +41,13 @@ export function useHomePage() {
   }
 
   const handlePassDate = async (dateId: string) => {
+    if (!selected) return
+    
     try {
-      await dislikeDate(dateId)
-      console.log('Plan marcado como no interesante')
+      // Pasar el contexto del compañero al dislike
+      const companionId = selected === 'solo' ? user?.uid || 'solo' : selected
+      await dislikeDate(dateId, companionId)
+      console.log('Plan marcado como no interesante para este compañero')
     } catch (error) {
       console.error('Error al marcar como no interesante:', error)
     }
